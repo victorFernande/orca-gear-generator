@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import ast
 import base64
+import csv
 import hashlib
 import io
 import os
@@ -29,6 +30,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SRC_PKG_DIR = PROJECT_ROOT / "src" / "gear_studio"
 DIST_DIR = PROJECT_ROOT / "dist"
 DIST_BUNDLE_PATH = DIST_DIR / "orca_gear_generator.py"
+DIST_ANY_BUNDLE_PATH = DIST_DIR / "orca_gear_generator_any.py"
 ICON_SRC_PATH = SRC_PKG_DIR / "icon.svg"
 
 MODULE_ORDER: list[str] = [
@@ -42,7 +44,10 @@ MODULE_ORDER: list[str] = [
     "plugin_main.py",
 ]
 
-PEP723_HEADER = """\
+DEFAULT_PLUGIN_VERSION = "1.3.1"
+PLUGIN_VERSION = os.environ.get("ORCA_PLUGIN_VERSION", "").strip().lstrip("v") or DEFAULT_PLUGIN_VERSION
+
+PEP723_HEADER = f"""\
 # /// script
 # requires-python = ">=3.12"
 # dependencies = ["numpy>=1.26"]
@@ -51,11 +56,9 @@ PEP723_HEADER = """\
 # name = "Orca Gear Studio"
 # description = "Estudio parametrico 3D de engrenagens com simulacao de giro, testes de encaixe e envio direto para a mesa"
 # author = "Orca Gear Studio"
-# version = "1.3.0"
+# version = "{PLUGIN_VERSION}"
 # ///
 """
-
-PLUGIN_VERSION = "1.3.0"
 PRESERVED_SIDE_FILES: frozenset[str] = frozenset(
     {
         "orca_gear_generator.py",
@@ -324,63 +327,99 @@ def build_bundle() -> Path:
     DIST_DIR.mkdir(parents=True, exist_ok=True)
     with open(DIST_BUNDLE_PATH, "w", encoding="utf-8", newline="\n") as fh:
         fh.write(bundled_code)
+    with open(DIST_ANY_BUNDLE_PATH, "w", encoding="utf-8", newline="\n") as fh_any:
+        fh_any.write(bundled_code)
 
     return DIST_BUNDLE_PATH
 
 
+def _record_digest_and_size(data: bytes) -> tuple[str, str]:
+    digest = hashlib.sha256(data).digest()
+    b64 = base64.urlsafe_b64encode(digest).rstrip(b"=").decode("ascii")
+    return f"sha256={b64}", str(len(data))
+
+
 def build_wheel() -> Path:
     """Build a standards-compliant pure-Python universal wheel (`py3-none-any.whl`) in `dist/`
-    for OrcaCloud / GitHub Releases (`read_wheel_plugin_metadata` compatible).
+    for OrcaCloud / GitHub Releases (`OrcaSlicer.dll` `read_wheel_plugin_metadata` compatible,
+    including `Name: Orca Gear Studio`, `Import-Name: gear_studio`, and `gear_studio/icon.svg`).
     """
-    DIST_DIR.mkdir(parents=True, exist_ok=True)
-    whl_name = f"orca_gear_generator-{PLUGIN_VERSION}-py3-none-any.whl"
-    whl_path = DIST_DIR / whl_name
-    dist_info = f"orca_gear_generator-{PLUGIN_VERSION}.dist-info"
+    pyproj = tomllib.loads((PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    proj_tbl = pyproj.get("project", {})
+    plugin_tbl = pyproj.get("tool", {}).get("orcaslicer", {}).get("plugin", {})
 
-    readme_text = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8") if (PROJECT_ROOT / "README.md").is_file() else ""
-    metadata_content = (
-        "Metadata-Version: 2.1\n"
-        "Name: orca-gear-generator\n"
-        f"Version: {PLUGIN_VERSION}\n"
-        "Summary: Estudio parametrico 3D de engrenagens com simulacao de giro, testes de encaixe e envio direto para a mesa\n"
-        "Author: Orca Gear Studio\n"
-        "License: MIT\n"
-        "Requires-Python: >=3.12\n"
-        "Requires-Dist: numpy>=1.26\n"
-        "Description-Content-Type: text/markdown\n\n"
-        + readme_text
-    )
-    wheel_content = (
+    display_name = str(plugin_tbl.get("name") or "Orca Gear Studio").strip()
+    version = PLUGIN_VERSION
+    summary = str(plugin_tbl.get("description") or proj_tbl.get("description") or "").strip()
+    author = str(plugin_tbl.get("author") or "Orca Gear Studio").strip()
+    req_py = str(proj_tbl.get("requires-python") or ">=3.12").strip()
+    deps = list(proj_tbl.get("dependencies") or ["numpy>=1.26"])
+
+    DIST_DIR.mkdir(parents=True, exist_ok=True)
+    whl_name = f"orca_gear_generator-{version}-py3-none-any.whl"
+    whl_path = DIST_DIR / whl_name
+    for stale_whl in DIST_DIR.glob("*.whl"):
+        if stale_whl != whl_path:
+            stale_whl.unlink()
+
+    dist_info = f"orca_gear_generator-{version}.dist-info"
+    readme_text = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8").strip() if (PROJECT_ROOT / "README.md").is_file() else summary
+
+    meta_lines = [
+        "Metadata-Version: 2.1",
+        f"Name: {display_name}",
+        f"Version: {version}",
+        f"Summary: {summary}",
+        f"Author: {author}",
+        "License: MIT",
+        f"Requires-Python: {req_py}",
+        *[f"Requires-Dist: {dep}" for dep in deps],
+        "Import-Name: gear_studio",
+        "Description-Content-Type: text/markdown",
+        "",
+        readme_text,
+        "",
+    ]
+    metadata_bytes = "\n".join(meta_lines).encode("utf-8")
+    wheel_bytes = (
         "Wheel-Version: 1.0\n"
-        "Generator: orca-gear-studio-bundler\n"
+        f"Generator: orca-gear-studio-bundler ({version})\n"
         "Root-Is-Purelib: true\n"
         "Tag: py3-none-any\n"
-    )
-    top_level_content = "gear_studio\n"
+    ).encode("utf-8")
+    top_level_bytes = b"gear_studio\n"
 
     entries: list[tuple[str, bytes]] = []
     pkg_files = ["__init__.py", *MODULE_ORDER, "icon.svg"]
+    missing = [f for f in pkg_files if not (SRC_PKG_DIR / f).is_file()]
+    if missing:
+        raise FileNotFoundError(f"Missing package file(s) in {SRC_PKG_DIR} for wheel build: {missing}")
+
     for fname in pkg_files:
-        fpath = SRC_PKG_DIR / fname
-        if fpath.is_file():
-            entries.append((f"gear_studio/{fname}", fpath.read_bytes()))
+        raw_bytes = (SRC_PKG_DIR / fname).read_bytes().replace(b"\r\n", b"\n")
+        entries.append((f"gear_studio/{fname}", raw_bytes))
 
     if (PROJECT_ROOT / "LICENSE").is_file():
-        entries.append((f"{dist_info}/LICENSE", (PROJECT_ROOT / "LICENSE").read_bytes()))
-    entries.append((f"{dist_info}/METADATA", metadata_content.encode("utf-8")))
-    entries.append((f"{dist_info}/WHEEL", wheel_content.encode("utf-8")))
-    entries.append((f"{dist_info}/top_level.txt", top_level_content.encode("utf-8")))
+        entries.append((f"{dist_info}/LICENSE", (PROJECT_ROOT / "LICENSE").read_bytes().replace(b"\r\n", b"\n")))
+    entries.append((f"{dist_info}/METADATA", metadata_bytes))
+    entries.append((f"{dist_info}/WHEEL", wheel_bytes))
+    entries.append((f"{dist_info}/top_level.txt", top_level_bytes))
 
-    record_lines: list[str] = []
+    rec_buf = io.StringIO()
+    writer = csv.writer(rec_buf, lineterminator="\n")
     for arc_path, data in entries:
-        digest = base64.urlsafe_b64encode(hashlib.sha256(data).digest()).rstrip(b"=").decode("ascii")
-        record_lines.append(f"{arc_path},sha256={digest},{len(data)}")
-    record_lines.append(f"{dist_info}/RECORD,,")
-    entries.append((f"{dist_info}/RECORD", ("\n".join(record_lines) + "\n").encode("utf-8")))
+        digest_str, size_str = _record_digest_and_size(data)
+        writer.writerow([arc_path, digest_str, size_str])
+    writer.writerow([f"{dist_info}/RECORD", "", ""])
+    entries.append((f"{dist_info}/RECORD", rec_buf.getvalue().encode("utf-8")))
 
+    fixed_dt = (2026, 1, 1, 0, 0, 0)
     with zipfile.ZipFile(whl_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
         for arc_path, data in entries:
-            zf.writestr(arc_path, data)
+            zi = zipfile.ZipInfo(arc_path, date_time=fixed_dt)
+            zi.external_attr = 0o644 << 16
+            zi.compress_type = zipfile.ZIP_DEFLATED
+            zf.writestr(zi, data)
 
     return whl_path
 
@@ -503,8 +542,66 @@ def verify_bundle_smoke(bundle_path: Path) -> None:
             sys.modules.pop("orca_gear_generator_smoke", None)
 
 
-def main() -> int:
-    print("[1/4] Bundling src/gear_studio/*.py -> dist/orca_gear_generator.py ...")
+def verify_wheel_smoke(wheel_path: Path) -> None:
+    """Validate `.whl` archive structure against `OrcaSlicer.dll` `read_wheel_plugin_metadata`
+    and verify importing `gear_studio` from the wheel triggers `@orca.plugin` registration.
+    """
+    with zipfile.ZipFile(wheel_path, "r") as zf:
+        names = zf.namelist()
+        dist_infos = sorted({n.split("/", 1)[0] for n in names if ".dist-info/" in n})
+        if len(dist_infos) != 1:
+            raise RuntimeError(f"Expected strictly 1 .dist-info directory in {wheel_path}, got {dist_infos}")
+        di = dist_infos[0]
+        for req_member in (
+            f"{di}/METADATA",
+            f"{di}/WHEEL",
+            f"{di}/RECORD",
+            f"{di}/top_level.txt",
+            "gear_studio/icon.svg",
+        ):
+            if req_member not in names:
+                raise RuntimeError(f"Wheel missing required member {req_member!r}")
+        meta_txt = zf.read(f"{di}/METADATA").decode("utf-8")
+        wheel_txt = zf.read(f"{di}/WHEEL").decode("utf-8")
+        rec_txt = zf.read(f"{di}/RECORD").decode("utf-8").strip()
+        assert "Name: Orca Gear Studio" in meta_txt
+        assert f"Version: {PLUGIN_VERSION}" in meta_txt
+        assert "Requires-Dist: numpy" in meta_txt
+        assert "Import-Name: gear_studio" in meta_txt
+        assert "Wheel-Version:" in wheel_txt and "-none-any" in wheel_txt
+        assert bool(rec_txt), "Wheel RECORD must be non-empty"
+
+    with tempfile.TemporaryDirectory(prefix="orca_gear_whl_smoke_") as tmp_dir:
+        extract_root = Path(tmp_dir) / "extracted_whl"
+        with zipfile.ZipFile(wheel_path, "r") as zf:
+            zf.extractall(extract_root)
+
+        saved_mods = {k: v for k, v in sys.modules.items() if k == "gear_studio" or k.startswith("gear_studio.")}
+        for k in list(saved_mods):
+            sys.modules.pop(k, None)
+        sys.path.insert(0, str(extract_root))
+        try:
+            import importlib
+
+            pkg = importlib.import_module("gear_studio")
+            assert hasattr(pkg, "OrcaGearStudioPlugin"), "gear_studio wheel package did not expose OrcaGearStudioPlugin"
+            inst = pkg.OrcaGearStudioPlugin()
+            inst.register_capabilities()
+            icon_file = pkg.GearStudioPageCapability().get_icon()
+            assert icon_file and Path(icon_file).is_file(), f"Wheel get_icon() failed: {icon_file!r}"
+        finally:
+            if str(extract_root) in sys.path:
+                sys.path.remove(str(extract_root))
+            for k in [m for m in sys.modules if m == "gear_studio" or m.startswith("gear_studio.")]:
+                sys.modules.pop(k, None)
+            sys.modules.update(saved_mods)
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = argv if argv is not None else sys.argv[1:]
+    skip_install = "--no-install" in args
+
+    print("[1/4] Bundling src/gear_studio/*.py -> dist/orca_gear_generator.py (+ _any.py) ...")
     bundle_path = build_bundle()
     size_kb = bundle_path.stat().st_size / 1024.0
     print(f"      Built {bundle_path} ({size_kb:.1f} KB)")
@@ -514,15 +611,19 @@ def main() -> int:
     whl_kb = whl_path.stat().st_size / 1024.0
     print(f"      Built {whl_path} ({whl_kb:.1f} KB)")
 
-    print("[3/4] Running smoke verification on dist/orca_gear_generator.py ...")
+    print("[3/4] Running smoke verification on dist/orca_gear_generator.py & dist/*.whl ...")
     verify_bundle_smoke(bundle_path)
-    print("      Smoke check passed (PEP 723, @orca.plugin, Page + Dock UI, ready/analysis bridge).")
+    verify_wheel_smoke(whl_path)
+    print("      Smoke check passed (PEP 723 .py, PEP 427 .whl, @orca.plugin, Page + Dock UI, bridge).")
 
-    print("[4/4] Installing into OrcaSlicer local plugins directory ...")
-    install_dir = install_plugin(bundle_path)
-    installed_entries = sorted(p.name for p in install_dir.iterdir())
-    print(f"      Installed to: {install_dir}")
-    print(f"      Directory contents: {installed_entries}")
+    if skip_install:
+        print("[4/4] Skipping local OrcaSlicer install (--no-install).")
+    else:
+        print("[4/4] Installing into OrcaSlicer local plugins directory ...")
+        install_dir = install_plugin(bundle_path)
+        installed_entries = sorted(p.name for p in install_dir.iterdir())
+        print(f"      Installed to: {install_dir}")
+        print(f"      Directory contents: {installed_entries}")
     return 0
 
 

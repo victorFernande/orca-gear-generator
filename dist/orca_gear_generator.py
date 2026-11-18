@@ -6,7 +6,7 @@
 # name = "Orca Gear Studio"
 # description = "Estudio parametrico 3D de engrenagens com simulacao de giro, testes de encaixe e envio direto para a mesa"
 # author = "Orca Gear Studio"
-# version = "1.3.0"
+# version = "1.3.1"
 # ///
 
 from __future__ import annotations

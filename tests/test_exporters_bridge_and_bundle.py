@@ -698,12 +698,18 @@ class TestExportersBridgeAndBundle(unittest.TestCase):
         self.assertEqual(plugin_meta.get("name"), "Orca Gear Studio")
         self.assertTrue(bool(plugin_meta.get("description")))
         self.assertTrue(bool(plugin_meta.get("author")))
-        self.assertEqual(plugin_meta.get("version"), "1.3.0")
+        self.assertEqual(plugin_meta.get("version"), "1.3.1")
+        self.assertTrue(Path(build_mod.DIST_ANY_BUNDLE_PATH).is_file())
+
+        whl_path = Path(build_mod.build_wheel())
+        self.assertTrue(whl_path.name.endswith("-py3-none-any.whl"))
+        self.assertTrue(whl_path.is_file())
 
         # Run official smoke check from build_and_install.py (temporarily clear mock orca so smoke uses its own orca fallback)
         saved_orca = {k: sys.modules.pop(k) for k in list(sys.modules) if k == "orca" or k.startswith("orca.")}
         try:
             build_mod.verify_bundle_smoke(bundle_path)
+            build_mod.verify_wheel_smoke(whl_path)
         finally:
             sys.modules.update(saved_orca)
 
