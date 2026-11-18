@@ -1,5 +1,9 @@
 # Orca Gear Studio (`orca_gear_generator`)
 
+<p align="center">
+  <img src="assets/icon.jpg" alt="Orca Gear Studio Showcase Icon" width="220" />
+</p>
+
 Plugin nativo em Python para **OrcaSlicer 2.5.1+** que adiciona um estúdio CAD paramétrico 3D interativo (WebGL2 + lupa cinemática 2D em 60 FPS) para engenharia, simulação de giro, calibração de folgas e fabricação aditiva FDM de engrenagens cilíndricas retas (*Spur*), helicoidais (*Helical* até 60°, incluindo 45° sem suporte) e espinha de peixe (*Herringbone*), com envio em 1 clique direto para a mesa de impressão (*Plater*) e ajuste automático de fatiamento mecânico estrutural.
 
 ---

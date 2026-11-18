@@ -1,7 +1,9 @@
 # Orca Gear Studio — Community Publishing & Marketplace Kit (PT-BR & EN)
 
 <p align="center">
-  <img src="../assets/icon.svg" alt="Orca Gear Studio Vector Icon" width="96" />
+  <img src="../assets/icon.jpg" alt="Orca Gear Studio Showcase Icon" width="180" />
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="../assets/icon.svg" alt="Orca Gear Studio Tab Vector Icon" width="96" />
 </p>
 
 Este documento reúne todos os textos prontos para copiar e colar (**Português PT-BR** e **English EN**) para publicar o **Orca Gear Studio (`v1.2.0`)** no GitHub, no **OrcaCloud Plugin Hub** e nas comunidades de impressão 3D (Reddit, Discord, Fóruns, Printables e MakerWorld).

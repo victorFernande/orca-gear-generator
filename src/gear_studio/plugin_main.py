@@ -216,33 +216,52 @@ SMTO_ABORTIFHUNG = 0x0002
 ORCA_OTHER_INSTANCE_DWDATA = 1
 
 ICON_SVG_CONTENT: str = """\
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
   <defs>
-    <linearGradient id="orcaGearMain" x1="3" y1="5" x2="22" y2="27" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#26e6c8"/>
-      <stop offset="55%" stop-color="#00bfa5"/>
-      <stop offset="100%" stop-color="#00a896"/>
+    <linearGradient id="orcaGearBody" x1="8" y1="20" x2="40" y2="53" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00E5FF"/>
+      <stop offset="48%" stop-color="#00BFA5"/>
+      <stop offset="100%" stop-color="#00796B"/>
     </linearGradient>
-    <linearGradient id="orcaGearPinion" x1="17" y1="3" x2="30" y2="17" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#64ffda"/>
-      <stop offset="100%" stop-color="#00bfa5"/>
+    <linearGradient id="orcaGearRim" x1="7" y1="18" x2="41" y2="54" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#B2FFFC"/>
+      <stop offset="52%" stop-color="#00E5FF"/>
+      <stop offset="100%" stop-color="#00897B"/>
+    </linearGradient>
+    <linearGradient id="orcaPinionFill" x1="33" y1="8" x2="56" y2="31" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFE082"/>
+      <stop offset="52%" stop-color="#FFB74D"/>
+      <stop offset="100%" stop-color="#F57C00"/>
+    </linearGradient>
+    <linearGradient id="orcaPinionRim" x1="33" y1="7" x2="57" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFF8E1"/>
+      <stop offset="55%" stop-color="#FFB74D"/>
+      <stop offset="100%" stop-color="#E65100"/>
     </linearGradient>
   </defs>
-  <!-- Driven Gear G2 (8 involute teeth centered at 11.5, 19.0) -->
-  <path d="M10.4 9.6L12.6 9.6L13.1 11.7L14.7 12.4L16.5 11.2L18.1 12.8L16.9 14.6L17.6 16.2L19.7 16.7L19.7 18.9L17.6 19.4L16.9 21.0L18.1 22.8L16.5 24.4L14.7 23.2L13.1 23.9L12.6 26.0L10.4 26.0L9.9 23.9L8.3 23.2L6.5 24.4L4.9 22.8L6.1 21.0L5.4 19.4L3.3 18.9L3.3 16.7L5.4 16.2L6.1 14.6L4.9 12.8L6.5 11.2L8.3 12.4L9.9 11.7Z"
-        transform="translate(0 1.8)"
-        fill="url(#orcaGearMain)" fill-opacity="0.22"
-        stroke="url(#orcaGearMain)" stroke-width="1.55" stroke-linejoin="round"/>
-  <circle cx="11.5" cy="19.6" r="3.1" stroke="#00bfa5" stroke-width="1.45"/>
-  <circle cx="11.5" cy="19.6" r="5.3" stroke="#00a896" stroke-width="0.9" stroke-dasharray="2 1.6" opacity="0.75"/>
 
-  <!-- Meshed Pinion G1 (6 involute teeth centered at 22.4, 10.2, phase-interleaved with G2) -->
-  <path d="M21.5 3.6L23.3 3.6L23.8 5.4L25.1 6.1L26.9 5.3L27.8 6.9L26.5 8.2L26.5 9.8L28.1 10.7L27.2 12.3L25.4 11.8L24.1 12.6L23.8 14.5L22.0 14.5L21.5 12.7L20.2 12.0L18.4 12.8L17.5 11.2L18.8 9.9L18.8 8.3L17.2 7.4L18.1 5.8L19.9 6.3L21.2 5.5Z"
-        transform="translate(0.5 0.9)"
-        fill="url(#orcaGearPinion)" fill-opacity="0.26"
-        stroke="url(#orcaGearPinion)" stroke-width="1.45" stroke-linejoin="round"/>
-  <path d="M21.5 10.0A1.9 1.9 0 1 0 24.3 10.0L24.3 9.2L21.5 9.2Z"
-        stroke="#64ffda" stroke-width="1.25" stroke-linejoin="round"/>
+  <!-- Subtle CAD Plater Base Ring (Sibling Identity with Orca Vase Studio) -->
+  <ellipse cx="32" cy="56.0" rx="23.5" ry="5.2" stroke="#00BFA5" stroke-width="1.25" stroke-opacity="0.48"/>
+  <path d="M12.5 56.0 H51.5 M20.5 52.2 L43.5 59.6 M43.5 52.2 L20.5 59.6" stroke="#00E5FF" stroke-width="0.75" stroke-opacity="0.26" stroke-linecap="round"/>
+
+  <!-- Driven Helical Gear G2 (Orca Emerald-Teal) -->
+  <path d="M34.19 29.32 L36.74 29.05 L39.25 28.84 L40.20 31.50 L38.13 32.93 L35.99 34.35 L36.07 36.88 L38.29 38.16 L40.45 39.47 L39.66 42.18 L37.14 42.12 L34.58 42.01 L33.15 44.10 L34.20 46.44 L35.18 48.77 L32.94 50.50 L30.94 48.97 L28.93 47.37 L26.55 48.23 L26.01 50.74 L25.44 53.19 L22.62 53.28 L21.90 50.86 L21.21 48.39 L18.78 47.68 L16.87 49.40 L14.97 51.05 L12.63 49.46 L13.47 47.08 L14.36 44.68 L12.81 42.68 L10.26 42.95 L7.75 43.16 L6.80 40.50 L8.87 39.07 L11.01 37.65 L10.93 35.12 L8.71 33.84 L6.55 32.53 L7.34 29.82 L9.86 29.88 L12.42 29.99 L13.85 27.90 L12.80 25.56 L11.82 23.23 L14.06 21.50 L16.06 23.03 L18.07 24.63 L20.45 23.77 L20.99 21.26 L21.56 18.81 L24.38 18.72 L25.10 21.14 L25.79 23.61 L28.22 24.32 L30.13 22.60 L32.03 20.95 L34.37 22.54 L33.53 24.92 L32.64 27.32 Z" fill="url(#orcaGearBody)" stroke="url(#orcaGearRim)" stroke-width="1.45" stroke-linejoin="round"/>
+  <circle cx="23.50" cy="36.00" r="11.30" stroke="#004D40" stroke-width="0.9" stroke-opacity="0.45"/>
+  <circle cx="31.73" cy="37.05" r="1.95" fill="#121820" fill-opacity="0.55" stroke="#80FFEA" stroke-width="0.7" stroke-opacity="0.55"/>
+  <circle cx="22.45" cy="44.23" r="1.95" fill="#121820" fill-opacity="0.55" stroke="#80FFEA" stroke-width="0.7" stroke-opacity="0.55"/>
+  <circle cx="15.27" cy="34.95" r="1.95" fill="#121820" fill-opacity="0.55" stroke="#80FFEA" stroke-width="0.7" stroke-opacity="0.55"/>
+  <circle cx="24.55" cy="27.77" r="1.95" fill="#121820" fill-opacity="0.55" stroke="#80FFEA" stroke-width="0.7" stroke-opacity="0.55"/>
+  <circle cx="23.50" cy="36.00" r="4.35" fill="#121820" fill-opacity="0.72" stroke="#B2FFFC" stroke-width="1.35"/>
+
+  <!-- Meshed Pinion Gear G1 (Warm Amber-Gold with D-Shaft Bore) -->
+  <path d="M40.07 26.32 L38.02 27.32 L35.95 28.18 L34.18 25.90 L35.53 24.11 L37.01 22.38 L36.52 20.05 L34.46 19.08 L32.49 17.99 L33.17 15.19 L35.42 15.13 L37.70 15.21 L39.20 13.37 L38.68 11.15 L38.30 8.94 L40.92 7.72 L42.37 9.44 L43.73 11.27 L46.10 11.30 L47.52 9.51 L49.01 7.84 L51.59 9.13 L51.15 11.33 L50.57 13.53 L52.02 15.41 L54.30 15.40 L56.54 15.52 L57.15 18.34 L55.15 19.37 L53.06 20.29 L52.50 22.60 L53.93 24.37 L55.24 26.20 L53.40 28.43 L51.36 27.51 L49.34 26.45 L47.18 27.45 L46.69 29.68 L46.07 31.83 L43.18 31.79 L42.63 29.62 L42.19 27.38 Z" fill="url(#orcaPinionFill)" stroke="url(#orcaPinionRim)" stroke-width="1.4" stroke-linejoin="round"/>
+  <circle cx="44.80" cy="19.50" r="6.80" stroke="#B45309" stroke-width="0.85" stroke-opacity="0.45"/>
+  <path d="M41.90 17.80 A3.35 3.35 0 1 0 47.70 17.80 Z" fill="#121820" fill-opacity="0.76" stroke="#FFF3E0" stroke-width="1.25" stroke-linejoin="round"/>
+
+  <!-- Rotation & Pitch Contact Glow Arc -->
+  <path d="M11.5 23.0 A18.5 18.5 0 0 1 23.0 13.5" stroke="#00E5FF" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="2.5 2.5" opacity="0.82"/>
+  <path d="M21.2 11.8 L24.2 13.4 L21.8 15.8" stroke="#00E5FF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.88"/>
+  <circle cx="35.75" cy="26.50" r="2.1" fill="#FFF8E1" fill-opacity="0.92"/>
 </svg>
 """
 
