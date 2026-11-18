@@ -8,7 +8,8 @@
 <text text-anchor="end" x="1536" y="71" fill="#9cb8af" font-size="18" font-weight="400" letter-spacing="2">03 / INSPECT</text>
 <path d="M64 830H1536" stroke="#30443f"/>
 <text x="64" y="871" fill="#9cb8af" font-size="16" font-weight="400" letter-spacing="1.5">PARAMETRIC GEARS  /  NATIVE ORCASLICER PLUGIN</text>
-<text text-anchor="end" x="1536" y="871" fill="#15dfae" font-size="16" font-weight="600" letter-spacing="1.5">FREE + OPEN SOURCE</text>
+<text text-anchor="end" x="1536" y="854" fill="#15dfae" font-size="14" font-weight="600" letter-spacing="1.5">FREE + OPEN SOURCE</text>
+<text text-anchor="end" x="1536" y="885" fill="#eaf4f0" font-size="20" font-weight="600" letter-spacing="0">By @VictorFernande</text>
 <text x="64" y="247" fill="#eaf4f0" font-size="58" font-weight="700" letter-spacing="0">EVERY ADJUSTMENT.</text>
 <text x="64" y="325" fill="#15dfae" font-size="64" font-weight="700" letter-spacing="0">IN VIEW.</text>
 <text x="64" y="417" fill="#eaf4f0" font-size="28" font-weight="400" letter-spacing="0">Parametric controls and live 3D.</text>

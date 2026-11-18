@@ -8,7 +8,8 @@
 <text text-anchor="end" x="1536" y="71" fill="#9cb8af" font-size="18" font-weight="400" letter-spacing="2">03 / INSPECIONE</text>
 <path d="M64 830H1536" stroke="#30443f"/>
 <text x="64" y="871" fill="#9cb8af" font-size="16" font-weight="400" letter-spacing="1.5">ENGRENAGENS PARAMÉTRICAS  /  PLUGIN NATIVO DO ORCASLICER</text>
-<text text-anchor="end" x="1536" y="871" fill="#15dfae" font-size="16" font-weight="600" letter-spacing="1.5">GRATUITO + CÓDIGO ABERTO</text>
+<text text-anchor="end" x="1536" y="854" fill="#15dfae" font-size="14" font-weight="600" letter-spacing="1.5">GRATUITO + CÓDIGO ABERTO</text>
+<text text-anchor="end" x="1536" y="885" fill="#eaf4f0" font-size="20" font-weight="600" letter-spacing="0">By @VictorFernande</text>
 <text x="64" y="247" fill="#eaf4f0" font-size="58" font-weight="700" letter-spacing="0">CADA AJUSTE.</text>
 <text x="64" y="325" fill="#15dfae" font-size="64" font-weight="700" letter-spacing="0">À SUA VISTA.</text>
 <text x="64" y="417" fill="#eaf4f0" font-size="28" font-weight="400" letter-spacing="0">Controles paramétricos e prévia 3D.</text>

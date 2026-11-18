@@ -39,7 +39,8 @@ def frame(height, section):
              text(1536, 71, section, 18, "#9cb8af", 400, 2).replace('<text ', '<text text-anchor="end" ', 1),
              f'<path d="M64 {height-70}H1536" stroke="#30443f"/>',
              text(64, height-29, tr("PARAMETRIC GEARS  /  NATIVE ORCASLICER PLUGIN", "ENGRENAGENS PARAMÉTRICAS  /  PLUGIN NATIVO DO ORCASLICER"), 16, "#9cb8af", 400, 1.5),
-             text(1536, height-29, tr("FREE + OPEN SOURCE", "GRATUITO + CÓDIGO ABERTO"), 16, ACCENT, 600, 1.5).replace('<text ', '<text text-anchor="end" ', 1)]
+             text(1536, height-46, tr("FREE + OPEN SOURCE", "GRATUITO + CÓDIGO ABERTO"), 14, ACCENT, 600, 1.5).replace('<text ', '<text text-anchor="end" ', 1),
+             text(1536, height-15, "By @VictorFernande", 20, "#eaf4f0", 600).replace('<text ', '<text text-anchor="end" ', 1)]
     return lines
 
 

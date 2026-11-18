@@ -8,7 +8,8 @@
 <text text-anchor="end" x="1536" y="71" fill="#9cb8af" font-size="18" font-weight="400" letter-spacing="2">02 / PROFILES</text>
 <path d="M64 830H1536" stroke="#30443f"/>
 <text x="64" y="871" fill="#9cb8af" font-size="16" font-weight="400" letter-spacing="1.5">PARAMETRIC GEARS  /  NATIVE ORCASLICER PLUGIN</text>
-<text text-anchor="end" x="1536" y="871" fill="#15dfae" font-size="16" font-weight="600" letter-spacing="1.5">FREE + OPEN SOURCE</text>
+<text text-anchor="end" x="1536" y="854" fill="#15dfae" font-size="14" font-weight="600" letter-spacing="1.5">FREE + OPEN SOURCE</text>
+<text text-anchor="end" x="1536" y="885" fill="#eaf4f0" font-size="20" font-weight="600" letter-spacing="0">By @VictorFernande</text>
 <text x="64" y="204" fill="#eaf4f0" font-size="55" font-weight="700" letter-spacing="0">ONE STUDIO. THREE TOOTH STYLES.</text>
 <text x="64" y="253" fill="#9cb8af" font-size="26" font-weight="400" letter-spacing="0">Set the ratio, module, face width and shaft connection for your mechanism.</text>
 <rect x="64" y="300" width="472" height="480" rx="20" fill="#172123" stroke="#30443f"/>
