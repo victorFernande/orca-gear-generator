@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none">
+  <defs>
+    <linearGradient id="orcaGearMain" x1="3" y1="5" x2="22" y2="27" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#26e6c8"/>
+      <stop offset="55%" stop-color="#00bfa5"/>
+      <stop offset="100%" stop-color="#00a896"/>
+    </linearGradient>
+    <linearGradient id="orcaGearPinion" x1="17" y1="3" x2="30" y2="17" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#64ffda"/>
+      <stop offset="100%" stop-color="#00bfa5"/>
+    </linearGradient>
+  </defs>
+  <!-- Driven Gear G2 (8 involute teeth centered at 11.5, 19.0) -->
+  <path d="M10.4 9.6L12.6 9.6L13.1 11.7L14.7 12.4L16.5 11.2L18.1 12.8L16.9 14.6L17.6 16.2L19.7 16.7L19.7 18.9L17.6 19.4L16.9 21.0L18.1 22.8L16.5 24.4L14.7 23.2L13.1 23.9L12.6 26.0L10.4 26.0L9.9 23.9L8.3 23.2L6.5 24.4L4.9 22.8L6.1 21.0L5.4 19.4L3.3 18.9L3.3 16.7L5.4 16.2L6.1 14.6L4.9 12.8L6.5 11.2L8.3 12.4L9.9 11.7Z"
+        transform="translate(0 1.8)"
+        fill="url(#orcaGearMain)" fill-opacity="0.22"
+        stroke="url(#orcaGearMain)" stroke-width="1.55" stroke-linejoin="round"/>
+  <circle cx="11.5" cy="19.6" r="3.1" stroke="#00bfa5" stroke-width="1.45"/>
+  <circle cx="11.5" cy="19.6" r="5.3" stroke="#00a896" stroke-width="0.9" stroke-dasharray="2 1.6" opacity="0.75"/>
+
+  <!-- Meshed Pinion G1 (6 involute teeth centered at 22.4, 10.2, phase-interleaved with G2) -->
+  <path d="M21.5 3.6L23.3 3.6L23.8 5.4L25.1 6.1L26.9 5.3L27.8 6.9L26.5 8.2L26.5 9.8L28.1 10.7L27.2 12.3L25.4 11.8L24.1 12.6L23.8 14.5L22.0 14.5L21.5 12.7L20.2 12.0L18.4 12.8L17.5 11.2L18.8 9.9L18.8 8.3L17.2 7.4L18.1 5.8L19.9 6.3L21.2 5.5Z"
+        transform="translate(0.5 0.9)"
+        fill="url(#orcaGearPinion)" fill-opacity="0.26"
+        stroke="url(#orcaGearPinion)" stroke-width="1.45" stroke-linejoin="round"/>
+  <path d="M21.5 10.0A1.9 1.9 0 1 0 24.3 10.0L24.3 9.2L21.5 9.2Z"
+        stroke="#64ffda" stroke-width="1.25" stroke-linejoin="round"/>
+</svg>
