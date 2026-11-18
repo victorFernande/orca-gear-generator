@@ -4,11 +4,12 @@ Quatro artes em **1600 × 900**, cada uma em **português e inglês**, com descr
 
 ## Textos prontos para colar
 
+- **Campo único bilíngue, aplicado no OrcaCloud:** [ORCACLOUD_BILINGUAL.md](ORCACLOUD_BILINGUAL.md)
 - **Português:** [ORCACLOUD_PT-BR.md](ORCACLOUD_PT-BR.md)
 - **English:** [ORCACLOUD_EN.md](ORCACLOUD_EN.md)
 - **Prévia local com troca de idioma:** [PREVIEW.html](PREVIEW.html)
 
-Os arquivos `ORCACLOUD_*.md` já contêm os endereços HTTPS diretos das imagens. Copie o conteúdo inteiro do arquivo correspondente para o campo de descrição daquele idioma no OrcaCloud. Os dois textos ficam abaixo da meta de 4.000 caracteres usada pelo autor da referência; esse valor não foi confirmado como limite do editor.
+Os arquivos `ORCACLOUD_*.md` já contêm os endereços HTTPS diretos das imagens. O editor conferido no Gear usa um único campo de descrição; nele, use **ORCACLOUD_BILINGUAL.md**, que organiza os dois idiomas em seções e contém as oito imagens. As versões individuais continuam disponíveis para outros usos. Os textos ficam abaixo da meta de 4.000 caracteres usada pelo autor da referência; esse valor não foi confirmado como limite do editor.
 
 Os arquivos `DESCRIPTION_*.md` são as fontes locais, com caminhos relativos para revisão no repositório. Use os arquivos **ORCACLOUD** ao copiar para o catálogo.
 
@@ -26,9 +27,11 @@ As fontes SVG editáveis estão na mesma pasta. Todos os títulos, legendas e te
 ## Inserir no OrcaCloud
 
 1. Abra a edição do seu Gear no OrcaCloud.
-2. Cole `ORCACLOUD_PT-BR.md` no campo em português e `ORCACLOUD_EN.md` no campo em inglês, conforme os idiomas disponíveis no editor.
-3. Confira os quatro banners em cada descrição na prévia do catálogo.
-4. Salve/publice quando a apresentação estiver revisada. Este pacote não faz essa alteração na sua conta.
+2. Cole `ORCACLOUD_BILINGUAL.md` no campo de descrição.
+3. Confira os quatro banners em inglês e os quatro em português na prévia do catálogo.
+4. Salve quando a apresentação estiver revisada.
+
+Em 18/11/2026, a versão bilíngue foi salva no [Gear no OrcaCloud](https://cloud.orcaslicer.com/app/plugins/shared-plugins/59f49437-eb86-401c-b637-a0842e86070a). A página confirmou a atualização, e o carregamento das oito imagens de 1600 × 900 foi verificado. Nome, versão 1.3.1, arquivos do plugin e anexos existentes foram mantidos.
 
 As imagens da descrição são independentes da galeria de anexos. Como na referência, não é necessário anexar as mesmas imagens para que os links Markdown funcionem. O modelo usado é:
 
