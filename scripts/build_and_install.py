@@ -51,11 +51,11 @@ PEP723_HEADER = """\
 # name = "Orca Gear Studio"
 # description = "Estudio parametrico 3D de engrenagens com simulacao de giro, testes de encaixe e envio direto para a mesa"
 # author = "Orca Gear Studio"
-# version = "1.2.0"
+# version = "1.3.0"
 # ///
 """
 
-PLUGIN_VERSION = "1.2.0"
+PLUGIN_VERSION = "1.3.0"
 PRESERVED_SIDE_FILES: frozenset[str] = frozenset(
     {
         "orca_gear_generator.py",

@@ -83,7 +83,7 @@ DEFAULT_PARAMS: dict[str, Any] = {
         "lightening_hole_count": 6,
         "lightening_hole_diameter_mm": 8.0,
     },
-    "sim_rpm": 24.0,
+    "sim_rpm": 1.0,
     "sim_direction": "cw",
     "export_target": "pair_separated",
     "auto_configure_slicer": True,
@@ -347,7 +347,7 @@ def normalize_params(raw: dict[str, Any] | None) -> dict[str, Any]:
         "input_torque_nm": _to_float(src.get("input_torque_nm"), d["input_torque_nm"], 0.05, 50.0),
         "pinion": pinion,
         "gear": gear,
-        "sim_rpm": _to_float(src.get("sim_rpm"), d["sim_rpm"], 1.0, 300.0),
+        "sim_rpm": _to_float(src.get("sim_rpm"), d["sim_rpm"], 1.0, 10.0),
         "sim_direction": _to_choice(src.get("sim_direction"), d["sim_direction"], VALID_SIM_DIRECTIONS),
         "export_target": _to_choice(src.get("export_target"), d["export_target"], VALID_EXPORT_TARGETS),
         "auto_configure_slicer": _to_bool(

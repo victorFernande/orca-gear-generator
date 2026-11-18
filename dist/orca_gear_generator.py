@@ -6,7 +6,7 @@
 # name = "Orca Gear Studio"
 # description = "Estudio parametrico 3D de engrenagens com simulacao de giro, testes de encaixe e envio direto para a mesa"
 # author = "Orca Gear Studio"
-# version = "1.2.0"
+# version = "1.3.0"
 # ///
 
 from __future__ import annotations
@@ -105,7 +105,7 @@ DEFAULT_PARAMS: dict[str, Any] = {
         "lightening_hole_count": 6,
         "lightening_hole_diameter_mm": 8.0,
     },
-    "sim_rpm": 24.0,
+    "sim_rpm": 1.0,
     "sim_direction": "cw",
     "export_target": "pair_separated",
     "auto_configure_slicer": True,
@@ -369,7 +369,7 @@ def normalize_params(raw: dict[str, Any] | None) -> dict[str, Any]:
         "input_torque_nm": _to_float(src.get("input_torque_nm"), d["input_torque_nm"], 0.05, 50.0),
         "pinion": pinion,
         "gear": gear,
-        "sim_rpm": _to_float(src.get("sim_rpm"), d["sim_rpm"], 1.0, 300.0),
+        "sim_rpm": _to_float(src.get("sim_rpm"), d["sim_rpm"], 1.0, 10.0),
         "sim_direction": _to_choice(src.get("sim_direction"), d["sim_direction"], VALID_SIM_DIRECTIONS),
         "export_target": _to_choice(src.get("export_target"), d["export_target"], VALID_EXPORT_TARGETS),
         "auto_configure_slicer": _to_bool(
@@ -3523,7 +3523,7 @@ _PRESETS_FALLBACK_DEFAULT_PARAMS: dict[str, Any] = {
         "lightening_hole_count": 6,
         "lightening_hole_diameter_mm": 8.0,
     },
-    "sim_rpm": 24.0,
+    "sim_rpm": 1.0,
     "sim_direction": "cw",
     "export_target": "pair_separated",
     "auto_configure_slicer": True,
@@ -3647,7 +3647,7 @@ def _presets_fallback_normalize(raw: dict[str, Any] | None = None) -> dict[str, 
         default_lightening="lightening_holes",
     )
 
-    out["sim_rpm"] = _presets_clamp_float(out.get("sim_rpm"), 1.0, 300.0, 24.0)
+    out["sim_rpm"] = _presets_clamp_float(out.get("sim_rpm"), 1.0, 10.0, 1.0)
     sd = str(out.get("sim_direction", "cw")).strip().lower()
     out["sim_direction"] = sd if sd in ("cw", "ccw") else "cw"
 
@@ -6682,8 +6682,8 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
 
           <div class="sim-flex-slider">
             <span class="sim-tag">RPM</span>
-            <input id="inp-sim-rpm" class="orca-slider" type="range" min="1" max="300" step="1" value="24" />
-            <span id="lbl-sim-rpm" class="sim-mono" style="min-width:48px;">24 rpm</span>
+            <input id="inp-sim-rpm" class="orca-slider" type="range" min="1" max="10" step="0.5" value="1" />
+            <span id="lbl-sim-rpm" class="sim-mono" style="min-width:52px;">1 rpm</span>
           </div>
 
           <div class="sim-flex-slider">
@@ -6958,7 +6958,7 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
       lightening_hole_count: 6,
       lightening_hole_diameter_mm: 8.0
     },
-    sim_rpm: 24.0,
+    sim_rpm: 1.0,
     sim_direction: "cw",
     export_target: "pair_separated",
     auto_configure_slicer: true
@@ -7062,7 +7062,7 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
       input_torque_nm: clampFloat(src.input_torque_nm, d.input_torque_nm, 0.05, 50.0),
       pinion: normalizeGearBody(src.pinion, d.pinion),
       gear: normalizeGearBody(src.gear, d.gear),
-      sim_rpm: clampFloat(src.sim_rpm, d.sim_rpm, 1.0, 300.0),
+      sim_rpm: clampFloat(src.sim_rpm, d.sim_rpm, 1.0, 10.0),
       sim_direction: toChoice(src.sim_direction, d.sim_direction, VALID_SIM_DIRECTIONS),
       export_target: toChoice(src.export_target, d.export_target, VALID_EXPORT_TARGETS),
       auto_configure_slicer: toBool(src.auto_configure_slicer, d.auto_configure_slicer)
@@ -10328,8 +10328,11 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
     }
     const rpmInp = document.getElementById("inp-sim-rpm");
     const rpmLbl = document.getElementById("lbl-sim-rpm");
-    if (rpmInp && document.activeElement !== rpmInp) rpmInp.value = String(Math.round(p.sim_rpm));
-    if (rpmLbl) rpmLbl.textContent = Math.round(p.sim_rpm) + " rpm";
+    if (rpmInp && document.activeElement !== rpmInp) rpmInp.value = String(p.sim_rpm);
+    if (rpmLbl) {
+      const rpmDisp = Math.abs(p.sim_rpm - Math.round(p.sim_rpm)) < 0.05 ? String(Math.round(p.sim_rpm)) : p.sim_rpm.toFixed(1);
+      rpmLbl.textContent = rpmDisp + " rpm";
+    }
 
     const daInp = document.getElementById("inp-sim-delta-a");
     const daLbl = document.getElementById("lbl-sim-delta-a");
@@ -11066,7 +11069,8 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
     });
 
     on("inp-sim-rpm", "input", function (e) {
-      state.params.sim_rpm = clampFloat(e.target.value, 24.0, 1.0, 300.0);
+      state.params.sim_rpm = clampFloat(e.target.value, 1.0, 1.0, 10.0);
+      updateDerivedBadges();
       recomputeKinematicsAndLoupeOnly();
     });
     on("inp-sim-rpm", "change", scheduleHostAnalyze);
@@ -11336,7 +11340,7 @@ def _build_fallback_orca_module() -> types.ModuleType:
             return self._stored_config
 
         def get_config_version(self) -> str:
-            return "1.2.0"
+            return "1.3.0"
 
         def save_config(self, config: str) -> bool:
             self._stored_config = str(config or "{}")
@@ -12734,11 +12738,15 @@ class GearStudioController:
                     fmt = "3mf"
                 export_target = str(msg.get("export_target") or params.get("export_target") or "pair_separated").strip()
 
-                # Capture host snapshots & plugin storage folder on the UI thread (inside callback scope)
                 host_ctx = self.read_host_context()
                 lang = host_ctx["lang"]
                 export_dir = self.get_export_dir()
-                host_cfg = self.read_full_host_config_snapshot(host_ctx) if fmt == "3mf" else None
+
+                target_items = collect_target_meshes(params, target=export_target, lang=lang)
+                prebuilt_pair: dict[str, Any] | None = None
+                if export_target in ("pair_separated", "full_suite") and len(target_items) >= 2:
+                    prebuilt_pair = {"pinion": target_items[0][1], "gear": target_items[1][1]}
+                report = self._run_pair_analysis(params, host_ctx, resolution="low", prebuilt_meshes=prebuilt_pair)
 
                 raw_filename = str(msg.get("filename") or "").strip()
                 if raw_filename:
@@ -12746,83 +12754,53 @@ class GearStudioController:
                 else:
                     base_stem = _slugify_filename(params.get("name", "engrenagens"), fallback="engrenagens")
 
-                native_host = _is_native_orca_host()
-
-                def _export_bg_worker() -> None:
-                    try:
-                        target_items = collect_target_meshes(params, target=export_target, lang=lang)
-                        prebuilt_pair: dict[str, Any] | None = None
-                        if export_target in ("pair_separated", "full_suite") and len(target_items) >= 2:
-                            prebuilt_pair = {"pinion": target_items[0][1], "gear": target_items[1][1]}
-                        report = self._run_pair_analysis(
-                            params, host_ctx, resolution="low", prebuilt_meshes=prebuilt_pair
+                paths: list[str] = []
+                if fmt == "3mf":
+                    target_3mf = export_dir / f"{base_stem}.3mf"
+                    host_cfg = self.read_full_host_config_snapshot(host_ctx)
+                    items_3mf = [(item_name, item_mesh, None) for item_name, item_mesh in target_items]
+                    written_3mf = Path(write_orca_3mf(target_3mf, items_3mf, params, host_config=host_cfg))
+                    paths.append(str(written_3mf))
+                else:
+                    if len(target_items) == 1:
+                        item_name, item_mesh = target_items[0]
+                        stl_path = self._write_stl_resilient(
+                            export_dir,
+                            base_stem,
+                            item_mesh,
+                            header=f"OrcaGearStudio:{item_name}",
                         )
+                        paths.append(str(stl_path))
+                    else:
+                        for item_name, item_mesh in target_items:
+                            item_slug = _slugify_filename(item_name, fallback="item")
+                            stl_path = self._write_stl_resilient(
+                                export_dir,
+                                f"{base_stem}_{item_slug}",
+                                item_mesh,
+                                header=f"OrcaGearStudio:{item_name}",
+                            )
+                            paths.append(str(stl_path))
 
-                        paths: list[str] = []
-                        if fmt == "3mf":
-                            target_3mf = export_dir / f"{base_stem}.3mf"
-                            items_3mf = [(item_name, item_mesh, None) for item_name, item_mesh in target_items]
-                            written_3mf = Path(write_orca_3mf(target_3mf, items_3mf, params, host_config=host_cfg))
-                            paths.append(str(written_3mf))
-                        else:
-                            if len(target_items) == 1:
-                                item_name, item_mesh = target_items[0]
-                                stl_path = self._write_stl_resilient(
-                                    export_dir,
-                                    base_stem,
-                                    item_mesh,
-                                    header=f"OrcaGearStudio:{item_name}",
-                                )
-                                paths.append(str(stl_path))
-                            else:
-                                for item_name, item_mesh in target_items:
-                                    item_slug = _slugify_filename(item_name, fallback="item")
-                                    stl_path = self._write_stl_resilient(
-                                        export_dir,
-                                        f"{base_stem}_{item_slug}",
-                                        item_mesh,
-                                        header=f"OrcaGearStudio:{item_name}",
-                                    )
-                                    paths.append(str(stl_path))
-
-                        ok_msg = (
-                            f"Exportado com sucesso ({len(paths)} arquivo(s)): {Path(paths[0]).name}"
-                            if lang == "pt"
-                            else f"Exported successfully ({len(paths)} file(s)): {Path(paths[0]).name}"
-                        )
-                        self._notify_host_toast(ok_msg)
-                        send_fn(
-                            {
-                                "type": "action_result",
-                                "ok": True,
-                                "action": "export_file",
-                                "format": fmt,
-                                "export_target": export_target,
-                                "path": paths[0],
-                                "paths": paths,
-                                "message": ok_msg,
-                                "report": report,
-                            }
-                        )
-                    except Exception as bg_exc:
-                        send_fn(
-                            {
-                                "type": "action_result",
-                                "ok": False,
-                                "action": "export_file",
-                                "message": str(bg_exc),
-                                "paths": [],
-                            }
-                        )
-
-                exp_worker = threading.Thread(
-                    target=_export_bg_worker,
-                    name="OrcaGearStudio-ExportWorker",
-                    daemon=True,
+                ok_msg = (
+                    f"Exportado com sucesso ({len(paths)} arquivo(s)): {Path(paths[0]).name}"
+                    if lang == "pt"
+                    else f"Exported successfully ({len(paths)} file(s)): {Path(paths[0]).name}"
                 )
-                exp_worker.start()
-                if not native_host:
-                    exp_worker.join(timeout=8.0)
+                self._notify_host_toast(ok_msg)
+                send_fn(
+                    {
+                        "type": "action_result",
+                        "ok": True,
+                        "action": "export_file",
+                        "format": fmt,
+                        "export_target": export_target,
+                        "path": paths[0],
+                        "paths": paths,
+                        "message": ok_msg,
+                        "report": report,
+                    }
+                )
                 return
 
             if msg_type == "send_to_plater":
@@ -12834,24 +12812,35 @@ class GearStudioController:
                 export_target = str(msg.get("export_target") or params.get("export_target") or "pair_separated").strip()
                 auto_cfg = bool(params.get("auto_configure_slicer", True))
 
-                # Capture host context & plugin storage folder on the UI thread before spawning worker
                 host_ctx = self.read_host_context()
                 lang = host_ctx["lang"]
                 export_dir = self.get_export_dir()
+
+                target_items = collect_target_meshes(params, target=export_target, lang=lang)
+                prebuilt_pair_plater: dict[str, Any] | None = None
+                if export_target in ("pair_separated", "full_suite") and len(target_items) >= 2:
+                    prebuilt_pair_plater = {"pinion": target_items[0][1], "gear": target_items[1][1]}
+                report = self._run_pair_analysis(
+                    params, host_ctx, resolution="low", prebuilt_meshes=prebuilt_pair_plater
+                )
+
                 base_stem = _slugify_filename(params.get("name", "engrenagens"), fallback="engrenagens")
+                stl_paths: list[str] = []
+                for item_name, item_mesh in target_items:
+                    item_slug = _slugify_filename(item_name, fallback="peca")
+                    stl_file = self._write_stl_resilient(
+                        export_dir,
+                        f"{base_stem}_{item_slug}_plater",
+                        item_mesh,
+                        header=f"OrcaGearStudio:{item_name}",
+                    )
+                    stl_paths.append(str(stl_file))
 
                 updates: dict[str, str] = {}
                 if auto_cfg:
                     updates = self._compute_process_preset_updates(params=params, host_ctx=host_ctx)
 
                 native_host = _is_native_orca_host()
-                process_ed = getattr(
-                    getattr(getattr(orca, "host", None), "preset", None),
-                    "process",
-                    None,
-                )
-                has_begin_update = bool(auto_cfg and hasattr(process_ed, "begin_update"))
-
                 ipc_delay = 0.06 if native_host else 0.01
                 preset_delay = 0.45 if native_host else 0.01
                 dispatch_outcome: dict[str, Any] = {
@@ -12866,76 +12855,21 @@ class GearStudioController:
                 self._last_plater_outcome = dispatch_outcome
 
                 def _plater_bg_worker() -> None:
-                    try:
-                        dispatch_outcome["thread_id"] = threading.get_ident()
-                        target_items = collect_target_meshes(params, target=export_target, lang=lang)
-                        prebuilt_pair_plater: dict[str, Any] | None = None
-                        if export_target in ("pair_separated", "full_suite") and len(target_items) >= 2:
-                            prebuilt_pair_plater = {"pinion": target_items[0][1], "gear": target_items[1][1]}
-                        report = self._run_pair_analysis(
-                            params, host_ctx, resolution="low", prebuilt_meshes=prebuilt_pair_plater
-                        )
+                    dispatch_outcome["thread_id"] = threading.get_ident()
+                    if ipc_delay > 0.0:
+                        time.sleep(ipc_delay)
 
-                        stl_paths: list[str] = []
-                        for item_name, item_mesh in target_items:
-                            item_slug = _slugify_filename(item_name, fallback="peca")
-                            stl_file = self._write_stl_resilient(
-                                export_dir,
-                                f"{base_stem}_{item_slug}_plater",
-                                item_mesh,
-                                header=f"OrcaGearStudio:{item_name}",
-                            )
-                            stl_paths.append(str(stl_file))
+                    ipc_ok, ipc_msg, hwnd = _dispatch_files_to_plater(stl_paths)
+                    dispatch_outcome["hwnd"] = hwnd
+                    dispatch_outcome["ipc_ok"] = ipc_ok
+                    dispatch_outcome["ipc_message"] = ipc_msg
 
-                        if ipc_delay > 0.0:
-                            time.sleep(ipc_delay)
-
-                        ipc_ok, ipc_msg, hwnd = _dispatch_files_to_plater(stl_paths)
-                        dispatch_outcome["hwnd"] = hwnd
-                        dispatch_outcome["ipc_ok"] = ipc_ok
-                        dispatch_outcome["ipc_message"] = ipc_msg
-
-                        if auto_cfg and updates:
-                            if preset_delay > 0.0:
-                                time.sleep(preset_delay)
-                            preset_res = self._apply_process_presets(updates)
-                            dispatch_outcome["preset_applied"] = bool(preset_res.get("applied", False))
-                            dispatch_outcome["preset_error"] = preset_res.get("error")
-
-                        slicer_configured = (
-                            bool(dispatch_outcome.get("preset_applied", False))
-                            if not native_host
-                            else bool(dispatch_outcome.get("preset_applied", False) or has_begin_update)
-                        )
-                        msg_text = (
-                            f"Enviado para a mesa do OrcaSlicer ({len(stl_paths)} peça(s))."
-                            if lang == "pt"
-                            else f"Sent to OrcaSlicer Plater ({len(stl_paths)} part(s))."
-                        )
-                        self._notify_host_toast(msg_text)
-                        send_fn(
-                            {
-                                "type": "action_result",
-                                "ok": True,
-                                "action": "send_to_plater",
-                                "export_target": export_target,
-                                "path": stl_paths[0],
-                                "paths": stl_paths,
-                                "message": msg_text,
-                                "report": report,
-                                "slicer_configured": slicer_configured,
-                            }
-                        )
-                    except Exception as bg_exc:
-                        send_fn(
-                            {
-                                "type": "action_result",
-                                "ok": False,
-                                "action": "send_to_plater",
-                                "message": str(bg_exc),
-                                "paths": [],
-                            }
-                        )
+                    if auto_cfg and updates:
+                        if preset_delay > 0.0:
+                            time.sleep(preset_delay)
+                        preset_res = self._apply_process_presets(updates)
+                        dispatch_outcome["preset_applied"] = bool(preset_res.get("applied", False))
+                        dispatch_outcome["preset_error"] = preset_res.get("error")
 
                 worker = threading.Thread(
                     target=_plater_bg_worker,
@@ -12947,7 +12881,36 @@ class GearStudioController:
 
                 if not native_host:
                     # Safe to join in standalone/test harness; NEVER join on native wxWidgets UI thread!
-                    worker.join(timeout=8.0)
+                    worker.join(timeout=6.0)
+                    slicer_configured = bool(dispatch_outcome.get("preset_applied", False))
+                else:
+                    process_ed = getattr(
+                        getattr(getattr(orca, "host", None), "preset", None),
+                        "process",
+                        None,
+                    )
+                    slicer_configured = bool(auto_cfg and hasattr(process_ed, "begin_update"))
+
+                msg_text = (
+                    f"Enviado para a mesa do OrcaSlicer ({len(stl_paths)} peça(s))."
+                    if lang == "pt"
+                    else f"Sent to OrcaSlicer Plater ({len(stl_paths)} part(s))."
+                )
+                self._notify_host_toast(msg_text)
+
+                send_fn(
+                    {
+                        "type": "action_result",
+                        "ok": True,
+                        "action": "send_to_plater",
+                        "export_target": export_target,
+                        "path": stl_paths[0],
+                        "paths": stl_paths,
+                        "message": msg_text,
+                        "report": report,
+                        "slicer_configured": slicer_configured,
+                    }
+                )
                 return
 
             if msg_type == "open_exports_folder":

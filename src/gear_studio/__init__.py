@@ -38,7 +38,7 @@ from .plugin_main import (
     OrcaGearStudioPlugin,
 )
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 
 _LAZY_SIBLING_EXPORTS: dict[str, tuple[str, str]] = {
     "MeshData": (".mesh_generator", "MeshData"),

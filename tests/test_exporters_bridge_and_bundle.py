@@ -698,7 +698,7 @@ class TestExportersBridgeAndBundle(unittest.TestCase):
         self.assertEqual(plugin_meta.get("name"), "Orca Gear Studio")
         self.assertTrue(bool(plugin_meta.get("description")))
         self.assertTrue(bool(plugin_meta.get("author")))
-        self.assertEqual(plugin_meta.get("version"), "1.2.0")
+        self.assertEqual(plugin_meta.get("version"), "1.3.0")
 
         # Run official smoke check from build_and_install.py (temporarily clear mock orca so smoke uses its own orca fallback)
         saved_orca = {k: sys.modules.pop(k) for k in list(sys.modules) if k == "orca" or k.startswith("orca.")}

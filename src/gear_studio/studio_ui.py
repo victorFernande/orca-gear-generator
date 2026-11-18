@@ -1749,8 +1749,8 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
 
           <div class="sim-flex-slider">
             <span class="sim-tag">RPM</span>
-            <input id="inp-sim-rpm" class="orca-slider" type="range" min="1" max="300" step="1" value="24" />
-            <span id="lbl-sim-rpm" class="sim-mono" style="min-width:48px;">24 rpm</span>
+            <input id="inp-sim-rpm" class="orca-slider" type="range" min="1" max="10" step="0.5" value="1" />
+            <span id="lbl-sim-rpm" class="sim-mono" style="min-width:52px;">1 rpm</span>
           </div>
 
           <div class="sim-flex-slider">
@@ -2025,7 +2025,7 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
       lightening_hole_count: 6,
       lightening_hole_diameter_mm: 8.0
     },
-    sim_rpm: 24.0,
+    sim_rpm: 1.0,
     sim_direction: "cw",
     export_target: "pair_separated",
     auto_configure_slicer: true
@@ -2129,7 +2129,7 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
       input_torque_nm: clampFloat(src.input_torque_nm, d.input_torque_nm, 0.05, 50.0),
       pinion: normalizeGearBody(src.pinion, d.pinion),
       gear: normalizeGearBody(src.gear, d.gear),
-      sim_rpm: clampFloat(src.sim_rpm, d.sim_rpm, 1.0, 300.0),
+      sim_rpm: clampFloat(src.sim_rpm, d.sim_rpm, 1.0, 10.0),
       sim_direction: toChoice(src.sim_direction, d.sim_direction, VALID_SIM_DIRECTIONS),
       export_target: toChoice(src.export_target, d.export_target, VALID_EXPORT_TARGETS),
       auto_configure_slicer: toBool(src.auto_configure_slicer, d.auto_configure_slicer)
@@ -5395,8 +5395,11 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
     }
     const rpmInp = document.getElementById("inp-sim-rpm");
     const rpmLbl = document.getElementById("lbl-sim-rpm");
-    if (rpmInp && document.activeElement !== rpmInp) rpmInp.value = String(Math.round(p.sim_rpm));
-    if (rpmLbl) rpmLbl.textContent = Math.round(p.sim_rpm) + " rpm";
+    if (rpmInp && document.activeElement !== rpmInp) rpmInp.value = String(p.sim_rpm);
+    if (rpmLbl) {
+      const rpmDisp = Math.abs(p.sim_rpm - Math.round(p.sim_rpm)) < 0.05 ? String(Math.round(p.sim_rpm)) : p.sim_rpm.toFixed(1);
+      rpmLbl.textContent = rpmDisp + " rpm";
+    }
 
     const daInp = document.getElementById("inp-sim-delta-a");
     const daLbl = document.getElementById("lbl-sim-delta-a");
@@ -6133,7 +6136,8 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
     });
 
     on("inp-sim-rpm", "input", function (e) {
-      state.params.sim_rpm = clampFloat(e.target.value, 24.0, 1.0, 300.0);
+      state.params.sim_rpm = clampFloat(e.target.value, 1.0, 1.0, 10.0);
+      updateDerivedBadges();
       recomputeKinematicsAndLoupeOnly();
     });
     on("inp-sim-rpm", "change", scheduleHostAnalyze);

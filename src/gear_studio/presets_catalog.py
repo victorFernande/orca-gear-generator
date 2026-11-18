@@ -96,7 +96,7 @@ _PRESETS_FALLBACK_DEFAULT_PARAMS: dict[str, Any] = {
         "lightening_hole_count": 6,
         "lightening_hole_diameter_mm": 8.0,
     },
-    "sim_rpm": 24.0,
+    "sim_rpm": 1.0,
     "sim_direction": "cw",
     "export_target": "pair_separated",
     "auto_configure_slicer": True,
@@ -220,7 +220,7 @@ def _presets_fallback_normalize(raw: dict[str, Any] | None = None) -> dict[str, 
         default_lightening="lightening_holes",
     )
 
-    out["sim_rpm"] = _presets_clamp_float(out.get("sim_rpm"), 1.0, 300.0, 24.0)
+    out["sim_rpm"] = _presets_clamp_float(out.get("sim_rpm"), 1.0, 10.0, 1.0)
     sd = str(out.get("sim_direction", "cw")).strip().lower()
     out["sim_direction"] = sd if sd in ("cw", "ccw") else "cw"
 
