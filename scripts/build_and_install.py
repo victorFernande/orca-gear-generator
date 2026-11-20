@@ -22,6 +22,7 @@ import tempfile
 import tokenize
 import tomllib
 import zipfile
+import zlib
 from pathlib import Path
 
 sys.dont_write_bytecode = True
@@ -34,6 +35,7 @@ DIST_ANY_BUNDLE_PATH = DIST_DIR / "orca_gear_generator_any.py"
 ICON_SRC_PATH = SRC_PKG_DIR / "icon.svg"
 
 MODULE_ORDER: list[str] = [
+    "locale_catalog.py",
     "schema.py",
     "involute_math.py",
     "fit_and_kinematics.py",
@@ -44,7 +46,7 @@ MODULE_ORDER: list[str] = [
     "plugin_main.py",
 ]
 
-DEFAULT_PLUGIN_VERSION = "1.3.1"
+DEFAULT_PLUGIN_VERSION = "1.4.0"
 PLUGIN_VERSION = os.environ.get("ORCA_PLUGIN_VERSION", "").strip().lstrip("v") or DEFAULT_PLUGIN_VERSION
 
 PEP723_HEADER = f"""\
@@ -281,6 +283,26 @@ def build_bundle() -> Path:
             src = _rename_colliding_privates(src, mod_stem, rename_set)
 
         transformed, fut = _strip_internal_imports(src)
+        if mod_file in {"studio_ui.py", "locale_catalog.py"}:
+            # Compress only the data literal. Bridge/classes remain readable and
+            # the decompressed HTML/CSS/JS stays byte-identical to the source.
+            literal_name = "_STUDIO_UI_HTML_TEMPLATE" if mod_file == "studio_ui.py" else "_GEAR_TRANSLATION_ROWS"
+            ui_tree = ast.parse(transformed)
+            for statement in ui_tree.body:
+                if (isinstance(statement, ast.Assign)
+                        and any(isinstance(t, ast.Name) and t.id == literal_name for t in statement.targets)
+                        and isinstance(statement.value, ast.Constant)
+                        and isinstance(statement.value.value, str)):
+                    packed = base64.b85encode(zlib.compress(statement.value.value.encode("utf-8"), 9))
+                    lines = transformed.splitlines(keepends=True)
+                    lines[statement.lineno - 1:statement.end_lineno] = [
+                        "import base64 as _gear_ui_b64, zlib as _gear_ui_zlib\n",
+                        literal_name + " = _gear_ui_zlib.decompress(_gear_ui_b64.b85decode(" + repr(packed) + ")).decode('utf-8')\n",
+                    ]
+                    transformed = "".join(lines)
+                    break
+            else:
+                raise RuntimeError("Missing canonical studio data literal: " + literal_name)
         all_future_features.update(fut)
 
         banner = (
@@ -417,6 +439,7 @@ def build_wheel() -> Path:
     with zipfile.ZipFile(whl_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
         for arc_path, data in entries:
             zi = zipfile.ZipInfo(arc_path, date_time=fixed_dt)
+            zi.create_system = 3
             zi.external_attr = 0o644 << 16
             zi.compress_type = zipfile.ZIP_DEFLATED
             zf.writestr(zi, data)

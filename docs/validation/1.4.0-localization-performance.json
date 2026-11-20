@@ -1,0 +1,372 @@
+{
+  "baseline_commit": "3c547d4ef71a4c518addb8e480fa26c6649e1153",
+  "version": "1.4.0",
+  "languages": [
+    "pt",
+    "en",
+    "es",
+    "it",
+    "fr",
+    "de",
+    "ja"
+  ],
+  "python_tests": {
+    "count": 22,
+    "seconds": 13.514,
+    "warnings": "error",
+    "result": "PASS"
+  },
+  "standalone_bytes": {
+    "before": 502810,
+    "after": 366292,
+    "reduction_percent": 27.15
+  },
+  "wheel_bytes": {
+    "before": 133919,
+    "after": 156639,
+    "note": "Larger wheel includes five additional readable language catalogs; do not claim all formats shrink."
+  },
+  "import_before": {
+    "method": "sequential fresh Python subprocess imports including NumPy; no OS cache flush",
+    "samples": [
+      2077.2152999415994,
+      622.7634999668226,
+      559.8918000468984,
+      673.7454000394791,
+      653.7592000095174,
+      580.2866999292746,
+      571.3756999466568
+    ],
+    "median_ms": 622.7634999668226,
+    "bundle_bytes": 502810,
+    "python": "3.12.13"
+  },
+  "import_after": {
+    "method": "sequential fresh Python subprocess imports including NumPy; no OS cache flush",
+    "samples": [
+      837.0999000035226,
+      617.5730999093503,
+      660.9563000965863,
+      711.5451999707147,
+      677.1294999634847,
+      717.621700023301,
+      603.535300004296
+    ],
+    "median_ms": 677.1294999634847,
+    "bundle_bytes": 366292,
+    "python": "3.12.13"
+  },
+  "startup_conclusion": "No verified startup improvement. Final median is slightly higher; sequential observations overlap, OS cache was not flushed, other work was running. Do not claim universal or native-Orca startup gains.",
+  "webgl_requested_bytes": {
+    "all_buffers_default_off_before": 675072,
+    "all_buffers_default_off_after": 585216,
+    "wire_on_after": 675072,
+    "kit_on_after": 821200,
+    "leave_kit_after": 675072,
+    "wire_off_again_after": 585216,
+    "note": "Requested WebGL buffer bytes from independent real instrumentation, not physical total GPU memory. Original triangle/wire data and draw arguments match at each real-control stage; no orphan/double-delete in bounded audit."
+  },
+  "browser": {
+    "ok": true,
+    "pages": [
+      {
+        "file": "page-light-pt.html",
+        "mode": "page",
+        "theme": "light",
+        "lang": "pt",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "page-light-en.html",
+        "mode": "page",
+        "theme": "light",
+        "lang": "en",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "page-light-es.html",
+        "mode": "page",
+        "theme": "light",
+        "lang": "es",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "page-light-it.html",
+        "mode": "page",
+        "theme": "light",
+        "lang": "it",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "page-light-fr.html",
+        "mode": "page",
+        "theme": "light",
+        "lang": "fr",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "page-light-de.html",
+        "mode": "page",
+        "theme": "light",
+        "lang": "de",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "page-light-ja.html",
+        "mode": "page",
+        "theme": "light",
+        "lang": "ja",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "page-dark-pt.html",
+        "mode": "page",
+        "theme": "dark",
+        "lang": "pt",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "page-dark-en.html",
+        "mode": "page",
+        "theme": "dark",
+        "lang": "en",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "page-dark-es.html",
+        "mode": "page",
+        "theme": "dark",
+        "lang": "es",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "page-dark-it.html",
+        "mode": "page",
+        "theme": "dark",
+        "lang": "it",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "page-dark-fr.html",
+        "mode": "page",
+        "theme": "dark",
+        "lang": "fr",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "page-dark-de.html",
+        "mode": "page",
+        "theme": "dark",
+        "lang": "de",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "page-dark-ja.html",
+        "mode": "page",
+        "theme": "dark",
+        "lang": "ja",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "dock-light-pt.html",
+        "mode": "dock",
+        "theme": "light",
+        "lang": "pt",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "dock-light-en.html",
+        "mode": "dock",
+        "theme": "light",
+        "lang": "en",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "dock-light-es.html",
+        "mode": "dock",
+        "theme": "light",
+        "lang": "es",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "dock-light-it.html",
+        "mode": "dock",
+        "theme": "light",
+        "lang": "it",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "dock-light-fr.html",
+        "mode": "dock",
+        "theme": "light",
+        "lang": "fr",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "dock-light-de.html",
+        "mode": "dock",
+        "theme": "light",
+        "lang": "de",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "dock-light-ja.html",
+        "mode": "dock",
+        "theme": "light",
+        "lang": "ja",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "dock-dark-pt.html",
+        "mode": "dock",
+        "theme": "dark",
+        "lang": "pt",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "dock-dark-en.html",
+        "mode": "dock",
+        "theme": "dark",
+        "lang": "en",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "dock-dark-es.html",
+        "mode": "dock",
+        "theme": "dark",
+        "lang": "es",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "dock-dark-it.html",
+        "mode": "dock",
+        "theme": "dark",
+        "lang": "it",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "dock-dark-fr.html",
+        "mode": "dock",
+        "theme": "dark",
+        "lang": "fr",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "dock-dark-de.html",
+        "mode": "dock",
+        "theme": "dark",
+        "lang": "de",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      },
+      {
+        "file": "dock-dark-ja.html",
+        "mode": "dock",
+        "theme": "dark",
+        "lang": "ja",
+        "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+        "large_buffer_bytes": 584448
+      }
+    ],
+    "console_errors": [],
+    "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
+    "source_hashes": {
+      "studio_ui.py": "e74256d5c92779ab42eab2258750fafc2601ab6371a19c2c3132564ff7e0980c",
+      "locale_catalog.py": "a0bcecc96da101abc93817f0c377d3592e7bcc61d2ef1bde33f60d7aa521c13e",
+      "plugin_main.py": "48ce7d82a4572f7df91d55d1c1f24354d5838087623c301a4cf71e3903c4a5ed"
+    },
+    "wire_bytes": {
+      "off": 584448,
+      "on": 674304,
+      "off_again": 584448
+    },
+    "scope": "28 isolated Chromium pages, locale persistence/late acknowledgements, preserved user names, bridge export request, exact per-locale GL buffers and lazy-wire lifecycle; no native app or actual export"
+  },
+  "independent_gpu_evidence": "1.4.0-gpu-equivalence.json",
+  "artifacts": [
+    {
+      "path": "dist/orca_gear_generator-1.4.0-py3-none-any.whl",
+      "bytes": 156639,
+      "sha256": "684d565cb09e9bf90f56e1e8ed81e3cd05db44b5b685af300e9967d0eabe6667"
+    },
+    {
+      "path": "dist/orca_gear_generator.py",
+      "bytes": 366292,
+      "sha256": "58b9eb368ce90a26a6f88ae52705455dabf5b024f5b2712f8f122be48695416e"
+    },
+    {
+      "path": "dist/orca_gear_generator_any.py",
+      "bytes": 366292,
+      "sha256": "58b9eb368ce90a26a6f88ae52705455dabf5b024f5b2712f8f122be48695416e"
+    }
+  ],
+  "source_hashes": {
+    "__init__.py": "6758bbb43be14001cfa61add3cc5b3c06afead9727ff9e33ecf1514ce431efe0",
+    "exporters.py": "ca396050eb6b0794fb597ad03b39379563a6fb5ce392dddfecf29ea65fd8c3db",
+    "fit_and_kinematics.py": "69b09c315492735535d99fe03c2c22a2cc0c752ef3c6070bbc5fb00386cfd52e",
+    "involute_math.py": "b689626861a2fc65e1651fa4961863aea662db0bde1743e663a75b91e9e043c3",
+    "locale_catalog.py": "a0bcecc96da101abc93817f0c377d3592e7bcc61d2ef1bde33f60d7aa521c13e",
+    "mesh_generator.py": "eeb4891b5bd8171e99d59ee74829edab1916444d4f92506f6bfede08f618b03a",
+    "plugin_main.py": "48ce7d82a4572f7df91d55d1c1f24354d5838087623c301a4cf71e3903c4a5ed",
+    "presets_catalog.py": "966c1e66b7dbe8183cbb3fabfe3e2b1b98effdaef88d7abd9be64479f018c8f9",
+    "schema.py": "bc890e79b8b388018bedbb4e9ac3927080f27ceda0f50ad2a148b644680d1813",
+    "studio_ui.py": "e74256d5c92779ab42eab2258750fafc2601ab6371a19c2c3132564ff7e0980c"
+  },
+  "wheel_audit": {
+    "members": [
+      "gear_studio/__init__.py",
+      "gear_studio/locale_catalog.py",
+      "gear_studio/schema.py",
+      "gear_studio/involute_math.py",
+      "gear_studio/fit_and_kinematics.py",
+      "gear_studio/mesh_generator.py",
+      "gear_studio/presets_catalog.py",
+      "gear_studio/exporters.py",
+      "gear_studio/studio_ui.py",
+      "gear_studio/plugin_main.py",
+      "gear_studio/icon.svg",
+      "orca_gear_generator-1.4.0.dist-info/LICENSE",
+      "orca_gear_generator-1.4.0.dist-info/METADATA",
+      "orca_gear_generator-1.4.0.dist-info/WHEEL",
+      "orca_gear_generator-1.4.0.dist-info/top_level.txt",
+      "orca_gear_generator-1.4.0.dist-info/RECORD"
+    ],
+    "record_digests_and_sizes": "PASS",
+    "all_modules_equal_source": "PASS",
+    "icon_equal_source": "PASS",
+    "version": "1.4.0"
+  },
+  "limitations": [
+    "No native Orca installation/control in this update",
+    "No new physical printing/fit test",
+    "No sustained FPS/totalGPU-memory guarantee",
+    "Translations are an initial review, not native-speaker certification",
+    "No GitHub release or Cloud publication by implementation worker"
+  ]
+}

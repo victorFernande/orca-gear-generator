@@ -4,7 +4,9 @@
   <img src="assets/icon.jpg" alt="Orca Gear Studio Showcase Icon" width="220" />
 </p>
 
-Plugin nativo em Python para **OrcaSlicer 2.5.1+** que adiciona um estúdio CAD paramétrico 3D interativo (WebGL2 + lupa cinemática 2D em 60 FPS) para engenharia, simulação de giro, calibração de folgas e fabricação aditiva FDM de engrenagens cilíndricas retas (*Spur*), helicoidais (*Helical* até 60°, incluindo 45° sem suporte) e espinha de peixe (*Herringbone*), com envio em 1 clique direto para a mesa de impressão (*Plater*) e ajuste automático de fatiamento mecânico estrutural.
+Plugin nativo em Python para **OrcaSlicer 2.5.1+** que adiciona um estúdio CAD paramétrico 3D interativo (WebGL2 + lupa cinemática 2D) para engenharia, simulação de giro, calibração de folgas e fabricação aditiva FDM de engrenagens cilíndricas retas (*Spur*), helicoidais (*Helical* até 60°, incluindo 45° sem suporte) e espinha de peixe (*Herringbone*), com envio em 1 clique direto para a mesa de impressão (*Plater*) e ajuste automático de fatiamento mecânico estrutural.
+
+**Versão 1.4.0:** seletor offline com **Português, English, Español, Italiano, Français, Deutsch e 日本語** na aba e no painel. A escolha manual fica salva e sincronizada; sem escolha, o plugin acompanha o idioma compatível do OrcaSlicer. Presets pessoais, nomes e números permanecem intactos. O bundle compacta apenas os dados de interface/tradução; a prévia libera as linhas de arame e os buffers do kit quando deixam de ser usados. A geometria de fabricação é idêntica à versão 1.3.1. Veja [idiomas, medições e limites / languages, measurements and limitations](docs/LANGUAGES_AND_PERFORMANCE.md).
 
 ---
 
@@ -67,7 +69,7 @@ Execute o script de empacotamento e instalação usando o Python 3.12+ (embutido
 
 ### Windows (PowerShell)
 ```powershell
-& "C:\Program Files\OrcaSlicer\python\python.exe" d:\Projects\orca-gear-generator\scripts\build_and_install.py
+& "C:\Program Files\OrcaSlicer\python\python.exe" scripts/build_and_install.py
 ```
 Instala em: `%APPDATA%\OrcaSlicer\orca_plugins\orca_gear_generator\`
 
@@ -80,7 +82,7 @@ Instala em: `~/Library/Application Support/OrcaSlicer/orca_plugins/orca_gear_gen
 *(Alternativa rápida no Mac sem compilar novamente: basta copiar os 2 arquivos já prontos `dist/orca_gear_generator.py` e `src/gear_studio/icon.svg` para `~/Library/Application Support/OrcaSlicer/orca_plugins/orca_gear_generator/`!)*
 
 O script:
-1. Compila todos os 8 módulos de `src/gear_studio/` em um único arquivo `dist/orca_gear_generator.py` com cabeçalho **PEP 723** (`# /// script`).
+1. Compila os módulos de `src/gear_studio/` em um único arquivo `dist/orca_gear_generator.py` com cabeçalho **PEP 723** (`# /// script`).
 2. Executa verificação automática (*smoke test*) de carregamento, registro `@orca.plugin`, geração de HTML (`page` e `dock`) e protocolo de mensagens.
 3. Instala estritamente `orca_gear_generator.py` e `icon.svg` no diretório de plugins do OrcaSlicer do sistema operacional atual (preservando `.install_state.json` e sem criar `__pycache__`).
 
@@ -95,7 +97,7 @@ O script:
 
 ### Windows
 ```powershell
-& "C:\Program Files\OrcaSlicer\python\python.exe" -m unittest discover -s d:\Projects\orca-gear-generator\tests -v
+& "C:\Program Files\OrcaSlicer\python\python.exe" -B -W error -m unittest discover -s tests -v
 ```
 
 ### macOS

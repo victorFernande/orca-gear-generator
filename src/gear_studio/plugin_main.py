@@ -13,6 +13,7 @@ import time
 import types
 from pathlib import Path
 from typing import Any, Callable
+from .locale_catalog import normalize_language, translate_message
 
 # Intra-package imports (stripped cleanly when bundled into single-file PEP 723 script)
 if "normalize_params" not in globals():
@@ -965,22 +966,14 @@ def _bundle_get_value(bundle: Any, key: str) -> Any:
 
 
 def _detect_language(app_info: dict[str, Any]) -> str:
-    raw = str(app_info.get("language") or app_info.get("lang") or "").strip().lower()
-    if raw.startswith("en"):
-        return "en"
-    if raw.startswith("pt"):
-        return "pt"
+    raw = app_info.get("language") or app_info.get("lang")
     if raw:
-        return "en" if not raw.startswith("pt") else "pt"
+        return normalize_language(raw)
     try:
-        loc = (locale.getlocale()[0] or "").lower()
-        if loc.startswith("en"):
-            return "en"
-        if loc.startswith("pt"):
-            return "pt"
+        return normalize_language(locale.getlocale()[0])
     except Exception:
-        pass
-    return "pt"
+        return "pt"
+
 
 
 def _detect_theme(app_info: dict[str, Any]) -> str:
@@ -1022,9 +1015,24 @@ class GearStudioController:
     def __init__(self) -> None:
         self._lock = threading.RLock()
         self._current_params: dict[str, Any] = normalize_params(DEFAULT_PARAMS)
-        self._listeners: list[Callable[[dict[str, Any]], None]] = []
+        self._listeners: dict[str, Callable[[dict[str, Any]], None]] = {}
+        self._language_override: str | None = None
+        self._language_revision = 0
+        self._preferences_loaded = False
         self._last_plater_worker: threading.Thread | None = None
         self._last_plater_outcome: dict[str, Any] = {}
+
+    def _load_ui_preferences(self) -> None:
+        """Read callback-scoped SDK storage lazily, never during module import."""
+        if self._preferences_loaded:
+            return
+        try:
+            saved = json.loads((_resolve_storage_dir() / "ui_preferences.json").read_text(encoding="utf-8"))
+            if isinstance(saved, dict) and saved.get("lang"):
+                self._language_override = normalize_language(saved["lang"])
+        except (OSError, ValueError, TypeError):
+            pass
+        self._preferences_loaded = True
 
     @property
     def current_params(self) -> dict[str, Any]:
@@ -1062,6 +1070,7 @@ class GearStudioController:
 
     def read_host_context(self) -> dict[str, Any]:
         """Defensively inspect `orca.host.app_language()` and `orca.host.preset_bundle()`."""
+        self._load_ui_preferences()
         app_info: dict[str, Any] = {}
         host = getattr(orca, "host", None)
         if host is not None:
@@ -1166,7 +1175,8 @@ class GearStudioController:
         )
 
         return {
-            "lang": lang,
+            "lang": self._language_override or lang,
+            "lang_explicit": self._language_override is not None,
             "theme": theme,
             "theme_explicit": theme_explicit,
             "orca_version": orca_version,
@@ -1227,6 +1237,7 @@ class GearStudioController:
         return {
             "mode": mode,
             "lang": host_ctx["lang"],
+            "lang_explicit": host_ctx.get("lang_explicit", False),
             "theme": host_ctx["theme"],
             "theme_explicit": host_ctx.get("theme_explicit", False),
             "printer": {
@@ -1402,8 +1413,31 @@ class GearStudioController:
             return
 
         msg_type = str(msg.get("type") or "").strip()
+        # Keep at most one sink per actual capability; built-in callables such as
+        # list.append are valid too. Reopening replaces the previous view.
+        listener_mode = "dock" if default_mode == "dock" else "page"
+        self._listeners[listener_mode] = send_fn
 
         try:
+            if msg_type == "ui_preferences":
+                self._preferences_loaded = True
+                self._language_override = normalize_language(msg.get("lang"))
+                prefs = _resolve_storage_dir() / "ui_preferences.json"
+                prefs.parent.mkdir(parents=True, exist_ok=True)
+                tmp = prefs.with_suffix(".tmp")
+                tmp.write_text(json.dumps({"lang": self._language_override}), encoding="utf-8")
+                tmp.replace(prefs)
+                self._language_revision += 1
+                response = {"type": "ui_preferences", "lang": self._language_override,
+                            "language_revision": self._language_revision,
+                            "language_request_id": msg.get("language_request_id")}
+                for mode, listener in list(self._listeners.items()):
+                    try:
+                        listener(response)
+                    except Exception:
+                        self._listeners.pop(mode, None)
+                return
+
             if msg_type == "ready":
                 mode = str(msg.get("mode") or default_mode)
                 init_ctx = self.build_initial_context(mode=mode)
@@ -1532,7 +1566,7 @@ class GearStudioController:
                     if lang == "pt"
                     else f"Exported successfully ({len(paths)} file(s)): {Path(paths[0]).name}"
                 )
-                self._notify_host_toast(ok_msg)
+                self._notify_host_toast(translate_message(ok_msg, lang))
                 send_fn(
                     {
                         "type": "action_result",
@@ -1542,7 +1576,7 @@ class GearStudioController:
                         "export_target": export_target,
                         "path": paths[0],
                         "paths": paths,
-                        "message": ok_msg,
+                        "message": translate_message(ok_msg, lang),
                         "report": report,
                     }
                 )
@@ -1641,7 +1675,7 @@ class GearStudioController:
                     if lang == "pt"
                     else f"Sent to OrcaSlicer Plater ({len(stl_paths)} part(s))."
                 )
-                self._notify_host_toast(msg_text)
+                self._notify_host_toast(translate_message(msg_text, lang))
 
                 send_fn(
                     {
@@ -1651,7 +1685,7 @@ class GearStudioController:
                         "export_target": export_target,
                         "path": stl_paths[0],
                         "paths": stl_paths,
-                        "message": msg_text,
+                        "message": translate_message(msg_text, lang),
                         "report": report,
                         "slicer_configured": slicer_configured,
                     }
@@ -1680,7 +1714,7 @@ class GearStudioController:
                         "action": "open_exports_folder",
                         "path": str(export_dir),
                         "paths": [str(export_dir)],
-                        "message": msg_text,
+                        "message": translate_message(msg_text, lang),
                     }
                 )
                 return
@@ -1843,6 +1877,7 @@ class GearStudioDockCapability(orca.script.ScriptPluginCapabilityBase):
         )
 
     def _on_panel_close(self) -> None:
+        self._controller._listeners.pop("dock", None)
         with self._panel_lock:
             GearStudioDockCapability._active_panel = None
 
