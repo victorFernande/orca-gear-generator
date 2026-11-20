@@ -16,14 +16,30 @@
     "warnings": "error",
     "result": "PASS"
   },
+  "protocol_follow_up": {
+    "change": "Distinct per-view request IDs; defer latest foreign-view response while a local request is pending, then resolve by global revision.",
+    "focused_python_tests": {
+      "count": 7,
+      "seconds": 0.646,
+      "result": "PASS"
+    },
+    "production_browser_regressions": [
+      "older own acknowledgement cannot replace latest own selection",
+      "pending page FR, foreign dock DE revision4, own FR acknowledgement revision3 converges to DE",
+      "pending page JA, foreign FR revision5, own JA acknowledgement revision6 keeps JA",
+      "late foreign revision4 cannot replace accepted revision6"
+    ],
+    "browser_result": "PASS on actual production handler in final 28-page run",
+    "rendering_scope": "No geometry/render-function changes; earlier independent GPU proof remains applicable to same draw data."
+  },
   "standalone_bytes": {
     "before": 502810,
-    "after": 366292,
-    "reduction_percent": 27.15
+    "after": 366569,
+    "reduction_percent": 27.1
   },
   "wheel_bytes": {
     "before": 133919,
-    "after": 156639,
+    "after": 156861,
     "note": "Larger wheel includes five additional readable language catalogs; do not claim all formats shrink."
   },
   "import_before": {
@@ -44,16 +60,16 @@
   "import_after": {
     "method": "sequential fresh Python subprocess imports including NumPy; no OS cache flush",
     "samples": [
-      837.0999000035226,
-      617.5730999093503,
-      660.9563000965863,
-      711.5451999707147,
-      677.1294999634847,
-      717.621700023301,
-      603.535300004296
+      746.5411999728531,
+      597.2639999818057,
+      657.4244999792427,
+      679.7175999963656,
+      624.9707998940721,
+      647.5282999454066,
+      673.2167999725789
     ],
-    "median_ms": 677.1294999634847,
-    "bundle_bytes": 366292,
+    "median_ms": 657.4244999792427,
+    "bundle_bytes": 366569,
     "python": "3.12.13"
   },
   "startup_conclusion": "No verified startup improvement. Final median is slightly higher; sequential observations overlap, OS cache was not flushed, other work was running. Do not claim universal or native-Orca startup gains.",
@@ -297,7 +313,7 @@
     "console_errors": [],
     "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
     "source_hashes": {
-      "studio_ui.py": "e74256d5c92779ab42eab2258750fafc2601ab6371a19c2c3132564ff7e0980c",
+      "studio_ui.py": "eda4fb57a2e2e2f36accbb2a36b64c288d3447aae629b633ef79c3e3195aba7b",
       "locale_catalog.py": "a0bcecc96da101abc93817f0c377d3592e7bcc61d2ef1bde33f60d7aa521c13e",
       "plugin_main.py": "48ce7d82a4572f7df91d55d1c1f24354d5838087623c301a4cf71e3903c4a5ed"
     },
@@ -312,18 +328,18 @@
   "artifacts": [
     {
       "path": "dist/orca_gear_generator-1.4.0-py3-none-any.whl",
-      "bytes": 156639,
-      "sha256": "684d565cb09e9bf90f56e1e8ed81e3cd05db44b5b685af300e9967d0eabe6667"
+      "bytes": 156861,
+      "sha256": "f76c270aee336de4b3907a069a3de22cf7e8644ffe8deac18d6a3fa07427a891"
     },
     {
       "path": "dist/orca_gear_generator.py",
-      "bytes": 366292,
-      "sha256": "58b9eb368ce90a26a6f88ae52705455dabf5b024f5b2712f8f122be48695416e"
+      "bytes": 366569,
+      "sha256": "01876cfa4c4e1776ca4a48319ab1fee0f163a56e9e642e3c992116fb26e3254d"
     },
     {
       "path": "dist/orca_gear_generator_any.py",
-      "bytes": 366292,
-      "sha256": "58b9eb368ce90a26a6f88ae52705455dabf5b024f5b2712f8f122be48695416e"
+      "bytes": 366569,
+      "sha256": "01876cfa4c4e1776ca4a48319ab1fee0f163a56e9e642e3c992116fb26e3254d"
     }
   ],
   "source_hashes": {
@@ -336,7 +352,7 @@
     "plugin_main.py": "48ce7d82a4572f7df91d55d1c1f24354d5838087623c301a4cf71e3903c4a5ed",
     "presets_catalog.py": "966c1e66b7dbe8183cbb3fabfe3e2b1b98effdaef88d7abd9be64479f018c8f9",
     "schema.py": "bc890e79b8b388018bedbb4e9ac3927080f27ceda0f50ad2a148b644680d1813",
-    "studio_ui.py": "e74256d5c92779ab42eab2258750fafc2601ab6371a19c2c3132564ff7e0980c"
+    "studio_ui.py": "eda4fb57a2e2e2f36accbb2a36b64c288d3447aae629b633ef79c3e3195aba7b"
   },
   "wheel_audit": {
     "members": [

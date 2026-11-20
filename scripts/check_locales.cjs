@@ -84,6 +84,21 @@ async function main(){
       window.dispatchEvent(new MessageEvent('message',{data:{type:'ui_preferences',lang:req.lang,language_request_id:req.language_request_id,language_revision:2}}));
     });
     assert.equal(await page.locator('html').getAttribute('lang'),'ja');
+    await page.locator('#lang-select').selectOption('fr');
+    await page.evaluate(()=>{
+      const req=window.__sent.filter(x=>x.type==='ui_preferences').at(-1);
+      window.dispatchEvent(new MessageEvent('message',{data:{type:'ui_preferences',lang:'de',language_request_id:'other-dock-view-1',language_revision:4}}));
+      window.dispatchEvent(new MessageEvent('message',{data:{type:'ui_preferences',lang:'fr',language_request_id:req.language_request_id,language_revision:3}}));
+    });
+    assert.equal(await page.locator('html').getAttribute('lang'),'de','newer foreign-view choice was lost while own ACK was pending');
+    await page.locator('#lang-select').selectOption('ja');
+    await page.evaluate(()=>{
+      const req=window.__sent.filter(x=>x.type==='ui_preferences').at(-1);
+      window.dispatchEvent(new MessageEvent('message',{data:{type:'ui_preferences',lang:'fr',language_request_id:'other-dock-view-2',language_revision:5}}));
+      window.dispatchEvent(new MessageEvent('message',{data:{type:'ui_preferences',lang:'ja',language_request_id:req.language_request_id,language_revision:6}}));
+      window.dispatchEvent(new MessageEvent('message',{data:{type:'ui_preferences',lang:'de',language_request_id:'other-dock-view-1',language_revision:4}}));
+    });
+    assert.equal(await page.locator('html').getAttribute('lang'),'ja','older foreign-view choice overrode newer own ACK');
     assert.equal((await stats(page)).uploads,before.uploads,'language switch rebuilt geometric buffers');
     await page.locator('#inp-gear-name').fill('My custom 日本語');
     await page.locator('#inp-gear-name').dispatchEvent('change');

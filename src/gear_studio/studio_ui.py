@@ -1965,7 +1965,8 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
     return LANGUAGES.some(function(x) { return x.code === short; }) ? short : "en";
   }
   let manualLanguage = null;
-  let pendingLanguageRequest = null, lastLanguageRevision = -1, languageRequestSequence = 0;
+  const languageClientId = Date.now().toString(36) + Math.random().toString(36).slice(2);
+  let pendingLanguageRequest = null, deferredLanguageReply = null, lastLanguageRevision = -1, languageRequestSequence = 0;
   try { manualLanguage = localStorage.getItem("orca-gear-language"); } catch (_) {}
   const DEG2RAD = Math.PI / 180.0;
   const RAD2DEG = 180.0 / Math.PI;
@@ -3192,7 +3193,7 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
     if (persist) {
       manualLanguage = state.lang;
       try { localStorage.setItem("orca-gear-language", state.lang); } catch (_) {}
-      pendingLanguageRequest = Date.now().toString(36) + "-" + (++languageRequestSequence);
+      pendingLanguageRequest = languageClientId + "-" + (++languageRequestSequence);
       if (!sendToHost({type: "ui_preferences", lang: state.lang, language_request_id: pendingLanguageRequest})) pendingLanguageRequest = null;
     }
     applyThemeAndLanguage();
@@ -3415,9 +3416,20 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
     }
 
     if (msg.type === "ui_preferences") {
+      if (pendingLanguageRequest && msg.language_request_id !== pendingLanguageRequest) {
+        // An earlier request from this view must not undo its latest choice.
+        // A newer request from the other view must survive until our own ACK.
+        const isOwnReply = String(msg.language_request_id || "").startsWith(languageClientId + "-");
+        if (!isOwnReply && Number.isFinite(msg.language_revision) &&
+            (!deferredLanguageReply || msg.language_revision > deferredLanguageReply.language_revision)) deferredLanguageReply = msg;
+        return;
+      }
+      if (pendingLanguageRequest) {
+        pendingLanguageRequest = null;
+        if (deferredLanguageReply && deferredLanguageReply.language_revision > Number(msg.language_revision)) msg = deferredLanguageReply;
+        deferredLanguageReply = null;
+      }
       if (Number.isFinite(msg.language_revision) && msg.language_revision < lastLanguageRevision) return;
-      if (pendingLanguageRequest && msg.language_request_id !== pendingLanguageRequest) return;
-      pendingLanguageRequest = null;
       if (Number.isFinite(msg.language_revision)) lastLanguageRevision = msg.language_revision;
       manualLanguage = normalizeLang(msg.lang);
       try { localStorage.setItem("orca-gear-language", manualLanguage); } catch (_) {}
