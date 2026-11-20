@@ -13,7 +13,7 @@ from __future__ import annotations
 import copy
 import json
 from typing import Any
-from .locale_catalog import TRANSLATION_CATALOG, SUPPORTED_LANGUAGES, LANGUAGE_NAMES, normalize_language
+from .locale_catalog import TRANSLATION_CATALOG, LANGUAGE_METADATA, LANGUAGE_PACKS, normalize_language
 
 if "DEFAULT_PARAMS" not in globals():
     try:
@@ -41,7 +41,7 @@ def _studio_ui_safe_json(payload: dict[str, Any]) -> str:
 
 
 _STUDIO_UI_HTML_TEMPLATE = r"""<!DOCTYPE html>
-<html lang="__INITIAL_LANG__" data-theme="__INITIAL_THEME__">
+<html lang="__INITIAL_LANG__" dir="__INITIAL_DIR__" data-theme="__INITIAL_THEME__">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -1961,8 +1961,12 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
   function normalizeLang(value) {
     const raw = String(value || "").trim().toLowerCase().split(".")[0].replace(/_/g, "-");
     if (!raw) return "pt";
-    const short = raw.split("-")[0];
-    return LANGUAGES.some(function(x) { return x.code === short; }) ? short : "en";
+    let candidate = raw.split("@")[0];
+    while (candidate) {
+      if (LANGUAGES.some(function(x) { return x.code === candidate; })) return candidate;
+      candidate = candidate.includes("-") ? candidate.slice(0, candidate.lastIndexOf("-")) : "";
+    }
+    return "en";
   }
   let manualLanguage = null;
   const languageClientId = Date.now().toString(36) + Math.random().toString(36).slice(2);
@@ -3153,9 +3157,14 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
   };
 
   function tr(key) {
-    const dict = I18N[state.lang] || I18N.en;
-    const value = dict[key] !== undefined ? dict[key] : (I18N.en[key] || key);
-    return localize(value);
+    const english = I18N.en[key] || key;
+    const contextualKey = "ui:" + key + "::" + english;
+    const catalog = LOCALES[state.lang] || {};
+    if (Object.prototype.hasOwnProperty.call(catalog, contextualKey)) return catalog[contextualKey];
+    if (Object.prototype.hasOwnProperty.call(catalog, english)) return localize(english);
+    // Compatibility fallback for an authored PT phrase absent from the data
+    // pack; a supplied JSON translation always takes precedence, including PT.
+    return state.lang === "pt" ? (I18N.pt[key] || english) : localize(english);
   }
 
   let templateLocale = null, localizedTemplates = [];
@@ -3185,6 +3194,7 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
   }
 
   function bilingual(en, pt) {
+    if (Object.prototype.hasOwnProperty.call(LOCALES[state.lang] || {}, en)) return localize(en);
     return state.lang === "pt" ? pt : localize(en);
   }
 
@@ -3217,21 +3227,22 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
       const parent = node.parentElement;
       if (!parent || parent.closest("script,style,input,textarea,select,[data-i18n],#presets-grid,#toast-banner")) continue;
       const raw = node.textContent, trimmed = raw.trim(), source = aliases[trimmed] || trimmed;
-      if (LOCALES.it[source]) staticTranslations.push({node: node, source: source, original: trimmed, prefix: raw.slice(0, raw.indexOf(trimmed)), suffix: raw.slice(raw.indexOf(trimmed)+trimmed.length)});
+      if (Object.values(LOCALES).some(function(dict) { return Object.prototype.hasOwnProperty.call(dict, source); })) staticTranslations.push({node: node, source: source, original: trimmed, prefix: raw.slice(0, raw.indexOf(trimmed)), suffix: raw.slice(raw.indexOf(trimmed)+trimmed.length)});
     }
     document.querySelectorAll("[title],[placeholder],[aria-label]").forEach(function(el) {
       for (const attr of ["title", "placeholder", "aria-label"]) {
         const original = el.getAttribute(attr);
         if (!original) continue;
         const source = aliases[original] || original;
-        if (LOCALES.it[source]) staticTranslations.push({node: el, attr: attr, source: source, original: original});
+        if (Object.values(LOCALES).some(function(dict) { return Object.prototype.hasOwnProperty.call(dict, source); })) staticTranslations.push({node: el, attr: attr, source: source, original: original});
       }
     });
   }
 
   function translateStaticUI() {
     for (const entry of staticTranslations) {
-      const text = state.lang === "pt" ? entry.original : localize(entry.source);
+      const supplied = Object.prototype.hasOwnProperty.call(LOCALES[state.lang] || {}, entry.source);
+      const text = supplied ? localize(entry.source) : (state.lang === "pt" ? entry.original : localize(entry.source));
       if (entry.attr) entry.node.setAttribute(entry.attr, text);
       else entry.node.textContent = entry.prefix + text + entry.suffix;
     }
@@ -5802,13 +5813,15 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
     if (typeof document === "undefined") return;
     document.documentElement.setAttribute("data-theme", state.theme);
     document.documentElement.setAttribute("lang", state.lang);
+    const languageMeta = LANGUAGES.find(function(x) { return x.code === state.lang; });
+    document.documentElement.setAttribute("dir", languageMeta ? languageMeta.direction : "ltr");
     if (document.body) document.body.setAttribute("data-mode", state.mode);
 
     const langBtn = document.getElementById("btn-lang");
     if (langBtn) langBtn.textContent = state.lang.toUpperCase();
     const selector = document.getElementById("lang-select");
     if (selector) {
-      if (!selector.options.length) LANGUAGES.forEach(function(x) { selector.add(new Option(x.name, x.code)); });
+      if (!selector.options.length) LANGUAGES.forEach(function(x) { selector.add(new Option(x.native_name, x.code)); });
       selector.value = state.lang;
     }
     translateStaticUI();
@@ -6483,7 +6496,7 @@ def get_studio_html(mode: str = "page", initial_context: dict[str, Any] | None =
     boot_payload: dict[str, Any] = {
         "mode": norm_mode,
         "locales": TRANSLATION_CATALOG,
-        "languages": [{"code": c, "name": n} for c, n in zip(SUPPORTED_LANGUAGES, LANGUAGE_NAMES, strict=True)],
+        "languages": LANGUAGE_METADATA,
         "initial_context": ctx,
         "fallback_params": fallback_params,
         "fallback_presets": fallback_presets,
@@ -6491,6 +6504,7 @@ def get_studio_html(mode: str = "page", initial_context: dict[str, Any] | None =
 
     html = _STUDIO_UI_HTML_TEMPLATE
     html = html.replace("__INITIAL_LANG__", norm_lang)
+    html = html.replace("__INITIAL_DIR__", LANGUAGE_PACKS[norm_lang]["direction"])
     html = html.replace("__INITIAL_THEME__", norm_theme)
     html = html.replace("__INITIAL_MODE__", norm_mode)
     html = html.replace("__ORCA_GEAR_STUDIO_BOOT_JSON__", _studio_ui_safe_json(boot_payload))

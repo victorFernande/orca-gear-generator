@@ -14,6 +14,8 @@ import base64
 import csv
 import hashlib
 import io
+import json
+import importlib.util
 import os
 import re
 import shutil
@@ -35,6 +37,7 @@ DIST_ANY_BUNDLE_PATH = DIST_DIR / "orca_gear_generator_any.py"
 ICON_SRC_PATH = SRC_PKG_DIR / "icon.svg"
 
 MODULE_ORDER: list[str] = [
+    "language_packs.py",
     "locale_catalog.py",
     "schema.py",
     "involute_math.py",
@@ -249,8 +252,18 @@ def _strip_internal_imports(source: str) -> tuple[str, set[str]]:
     return "".join(lines), future_features
 
 
+def _source_language_packs() -> dict:
+    """Validate all data packs before emitting any distributable artifact."""
+    spec = importlib.util.spec_from_file_location("gear_pack_builder", SRC_PKG_DIR / "language_packs.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    packs, _ = module.load_language_packs(SRC_PKG_DIR / "locales", strict=True)
+    return packs
+
+
 def build_bundle() -> Path:
     """Compile all `src/gear_studio/*.py` modules into `dist/orca_gear_generator.py`."""
+    language_packs = _source_language_packs()
     missing = [m for m in MODULE_ORDER if not (SRC_PKG_DIR / m).is_file()]
     if missing:
         raise FileNotFoundError(f"Missing required source module(s) in {SRC_PKG_DIR}: {missing}")
@@ -283,10 +296,16 @@ def build_bundle() -> Path:
             src = _rename_colliding_privates(src, mod_stem, rename_set)
 
         transformed, fut = _strip_internal_imports(src)
-        if mod_file in {"studio_ui.py", "locale_catalog.py"}:
+        if mod_file == "language_packs.py":
+            packed_catalogs = base64.b85encode(zlib.compress(json.dumps(language_packs, ensure_ascii=False, separators=(",", ":")).encode("utf-8"), 9))
+            marker = "_BUNDLED_LANGUAGE_PACKS = {}  # Replaced with compressed JSON by the standalone builder."
+            if marker not in transformed:
+                raise RuntimeError("Missing language-pack embedding marker")
+            transformed = transformed.replace(marker, "_BUNDLED_LANGUAGE_PACKS = json.loads(zlib.decompress(base64.b85decode(" + repr(packed_catalogs) + ")).decode('utf-8'))")
+        if mod_file == "studio_ui.py":
             # Compress only the data literal. Bridge/classes remain readable and
             # the decompressed HTML/CSS/JS stays byte-identical to the source.
-            literal_name = "_STUDIO_UI_HTML_TEMPLATE" if mod_file == "studio_ui.py" else "_GEAR_TRANSLATION_ROWS"
+            literal_name = "_STUDIO_UI_HTML_TEMPLATE"
             ui_tree = ast.parse(transformed)
             for statement in ui_tree.body:
                 if (isinstance(statement, ast.Assign)
@@ -366,6 +385,7 @@ def build_wheel() -> Path:
     for OrcaCloud / GitHub Releases (`OrcaSlicer.dll` `read_wheel_plugin_metadata` compatible,
     including `Name: Orca Gear Studio`, `Import-Name: gear_studio`, and `gear_studio/icon.svg`).
     """
+    _source_language_packs()
     pyproj = tomllib.loads((PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     proj_tbl = pyproj.get("project", {})
     plugin_tbl = pyproj.get("tool", {}).get("orcaslicer", {}).get("plugin", {})
@@ -426,6 +446,9 @@ def build_wheel() -> Path:
     entries.append((f"{dist_info}/METADATA", metadata_bytes))
     entries.append((f"{dist_info}/WHEEL", wheel_bytes))
     entries.append((f"{dist_info}/top_level.txt", top_level_bytes))
+
+    for pack_file in sorted((SRC_PKG_DIR / "locales").glob("*.json")):
+        entries.append(("gear_studio/locales/" + pack_file.name, pack_file.read_bytes()))
 
     rec_buf = io.StringIO()
     writer = csv.writer(rec_buf, lineterminator="\n")

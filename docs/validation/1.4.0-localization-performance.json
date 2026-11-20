@@ -11,8 +11,8 @@
     "ja"
   ],
   "python_tests": {
-    "count": 22,
-    "seconds": 13.514,
+    "count": 26,
+    "seconds": 15.881,
     "warnings": "error",
     "result": "PASS"
   },
@@ -34,12 +34,12 @@
   },
   "standalone_bytes": {
     "before": 502810,
-    "after": 366569,
-    "reduction_percent": 27.1
+    "after": 379322,
+    "reduction_percent": 24.56
   },
   "wheel_bytes": {
     "before": 133919,
-    "after": 156861,
+    "after": 185123,
     "note": "Larger wheel includes five additional readable language catalogs; do not claim all formats shrink."
   },
   "import_before": {
@@ -60,19 +60,19 @@
   "import_after": {
     "method": "sequential fresh Python subprocess imports including NumPy; no OS cache flush",
     "samples": [
-      746.5411999728531,
-      597.2639999818057,
-      657.4244999792427,
-      679.7175999963656,
-      624.9707998940721,
-      647.5282999454066,
-      673.2167999725789
+      658.3239000756294,
+      650.2536999760196,
+      657.452900079079,
+      631.0113000217825,
+      547.3362000193447,
+      544.0041000256315,
+      545.8156999666244
     ],
-    "median_ms": 657.4244999792427,
-    "bundle_bytes": 366569,
+    "median_ms": 631.0113000217825,
+    "bundle_bytes": 379322,
     "python": "3.12.13"
   },
-  "startup_conclusion": "No verified startup improvement. Final median is slightly higher; sequential observations overlap, OS cache was not flushed, other work was running. Do not claim universal or native-Orca startup gains.",
+  "startup_conclusion": "Observed fresh-process imports are environment-specific; sequential before/after observations do not isolate host load or OS cache effects. Do not claim universal or native-Orca startup gains.",
   "webgl_requested_bytes": {
     "all_buffers_default_off_before": 675072,
     "all_buffers_default_off_after": 585216,
@@ -313,8 +313,8 @@
     "console_errors": [],
     "geometry_hash": "e4492ea0321bceb7f4793ad55f6455796f99c608e1f57ef5a8f7baa8a183c8fd",
     "source_hashes": {
-      "studio_ui.py": "eda4fb57a2e2e2f36accbb2a36b64c288d3447aae629b633ef79c3e3195aba7b",
-      "locale_catalog.py": "a0bcecc96da101abc93817f0c377d3592e7bcc61d2ef1bde33f60d7aa521c13e",
+      "studio_ui.py": "265237c214254cd0b7e2098832f3d95b1b472a8a37fb91d244b9b4da0e16002b",
+      "locale_catalog.py": "0c61ac01a26b3c0892d2b0c199fd158a5630c0c6661d3f301f2befea85ad02e9",
       "plugin_main.py": "48ce7d82a4572f7df91d55d1c1f24354d5838087623c301a4cf71e3903c4a5ed"
     },
     "wire_bytes": {
@@ -324,22 +324,214 @@
     },
     "scope": "28 isolated Chromium pages, locale persistence/late acknowledgements, preserved user names, bridge export request, exact per-locale GL buffers and lazy-wire lifecycle; no native app or actual export"
   },
+  "modular_browser": {
+    "ok": true,
+    "scope": "Real Chromium page/dock/light/dark combinations from two synthetic JSON files added only to a private source copy; plus PT/EN JSON-only edits of controls, parameters and tooltips; dynamic selector, context-key precedence, partial English fallback, personal names and restart persistence.",
+    "production_synthetic_packs_committed": false,
+    "checks": [
+      {
+        "mode": "page",
+        "theme": "light",
+        "lang": "nl",
+        "result": "PASS"
+      },
+      {
+        "mode": "page",
+        "theme": "light",
+        "lang": "nl-nl",
+        "result": "PASS"
+      },
+      {
+        "mode": "page",
+        "theme": "dark",
+        "lang": "nl",
+        "result": "PASS"
+      },
+      {
+        "mode": "page",
+        "theme": "dark",
+        "lang": "nl-nl",
+        "result": "PASS"
+      },
+      {
+        "mode": "dock",
+        "theme": "light",
+        "lang": "nl",
+        "result": "PASS"
+      },
+      {
+        "mode": "dock",
+        "theme": "light",
+        "lang": "nl-nl",
+        "result": "PASS"
+      },
+      {
+        "mode": "dock",
+        "theme": "dark",
+        "lang": "nl",
+        "result": "PASS"
+      },
+      {
+        "mode": "dock",
+        "theme": "dark",
+        "lang": "nl-nl",
+        "result": "PASS"
+      },
+      {
+        "mode": "page",
+        "theme": "light",
+        "lang": "pt",
+        "kind": "existing-language JSON-only edit",
+        "result": "PASS"
+      },
+      {
+        "mode": "page",
+        "theme": "light",
+        "lang": "en",
+        "kind": "existing-language JSON-only edit",
+        "result": "PASS"
+      },
+      {
+        "mode": "page",
+        "theme": "dark",
+        "lang": "pt",
+        "kind": "existing-language JSON-only edit",
+        "result": "PASS"
+      },
+      {
+        "mode": "page",
+        "theme": "dark",
+        "lang": "en",
+        "kind": "existing-language JSON-only edit",
+        "result": "PASS"
+      },
+      {
+        "mode": "dock",
+        "theme": "light",
+        "lang": "pt",
+        "kind": "existing-language JSON-only edit",
+        "result": "PASS"
+      },
+      {
+        "mode": "dock",
+        "theme": "light",
+        "lang": "en",
+        "kind": "existing-language JSON-only edit",
+        "result": "PASS"
+      },
+      {
+        "mode": "dock",
+        "theme": "dark",
+        "lang": "pt",
+        "kind": "existing-language JSON-only edit",
+        "result": "PASS"
+      },
+      {
+        "mode": "dock",
+        "theme": "dark",
+        "lang": "en",
+        "kind": "existing-language JSON-only edit",
+        "result": "PASS"
+      }
+    ],
+    "console_errors": [],
+    "source_hashes": {
+      "studio_ui.py": "265237c214254cd0b7e2098832f3d95b1b472a8a37fb91d244b9b4da0e16002b"
+    }
+  },
+  "future_normal_ci_acceptance": {
+    "ok": true,
+    "method": "Copy project, add ONLY one partial contributed-nederlands.json with code nl (8th language); no Python/JavaScript edits inside fixture; run actual normal CI build, full unittest, normal browser and synthetic browser commands. Fixture languages already present are safely replaced by canonical code only in synthetic test copies.",
+    "checks": [
+      {
+        "check": "build",
+        "exit_code": 0
+      },
+      {
+        "check": "unittest",
+        "exit_code": 0
+      },
+      {
+        "check": "normal-browser",
+        "exit_code": 0
+      },
+      {
+        "check": "synthetic-browser",
+        "exit_code": 0
+      }
+    ],
+    "normal_browser_cases": 32,
+    "synthetic_browser_cases": 16
+  },
+  "language_packs": {
+    "contract": "schema_version/code/native_name/direction/order/translations, plaintext and matching placeholders; contextual ui:key::English keys supported",
+    "production_files": [
+      {
+        "path": "src/gear_studio/locales/de.json",
+        "sha256": "a1798ca5a8d09dd03ab87979f8b5d5ac0b8bc2f99344b0da0effbfdbca83167a",
+        "bytes": 17085
+      },
+      {
+        "path": "src/gear_studio/locales/en.json",
+        "sha256": "8d32e73440a6a01c7addde19076120803bbd2a118b38a67276bdfa09d34012ec",
+        "bytes": 16846
+      },
+      {
+        "path": "src/gear_studio/locales/es.json",
+        "sha256": "07cf7011f6d4a90a8928c7b342defe851264d1b21195c8a44d66d8501491c701",
+        "bytes": 17142
+      },
+      {
+        "path": "src/gear_studio/locales/fr.json",
+        "sha256": "9761a259377135ac510ffbf6185e82ff57c1d0d8b0cd2a248e7d220aa421c003",
+        "bytes": 17168
+      },
+      {
+        "path": "src/gear_studio/locales/it.json",
+        "sha256": "779a6e192dc7e0aedc1044d9d06b9931bce1425fb388e2b0b1d8a8b80fd38230",
+        "bytes": 17021
+      },
+      {
+        "path": "src/gear_studio/locales/ja.json",
+        "sha256": "5ee747b754e9683225b194b82754e76f7ce22ec88e5f736c8adead0752dc4b8a",
+        "bytes": 18309
+      },
+      {
+        "path": "src/gear_studio/locales/pt.json",
+        "sha256": "79c9cafcbb31337257d1d03b4b600ef5769700f685824ac59609ed3b5a8fecc9",
+        "bytes": 11310
+      }
+    ],
+    "synthetic_packaging_tests": "Added only nl.json/nl-nl.json to a temporary source copy; actual source, standalone, any and extracted wheel recognize them. Sidecar pl.json appears at next startup. No Python/JS production edits or synthetic language files committed.",
+    "strict_validation_tests": [
+      "corrupt JSON",
+      "duplicate JSON keys",
+      "duplicate canonical locale codes",
+      "non-text/boolean locale codes",
+      "boolean schema version",
+      "mismatched placeholders",
+      "HTML translation/native label",
+      "blank source key",
+      "invalid native control characters"
+    ],
+    "runtime_fallback": "Bad optional data is skipped; English remains available. Builders reject malformed source data."
+  },
   "independent_gpu_evidence": "1.4.0-gpu-equivalence.json",
   "artifacts": [
     {
       "path": "dist/orca_gear_generator-1.4.0-py3-none-any.whl",
-      "bytes": 156861,
-      "sha256": "f76c270aee336de4b3907a069a3de22cf7e8644ffe8deac18d6a3fa07427a891"
+      "bytes": 185123,
+      "sha256": "c4bc97e2a31db32c808d6505c6ae09af1122701b3226f2a1b5360453c3da83d8"
     },
     {
       "path": "dist/orca_gear_generator.py",
-      "bytes": 366569,
-      "sha256": "01876cfa4c4e1776ca4a48319ab1fee0f163a56e9e642e3c992116fb26e3254d"
+      "bytes": 379322,
+      "sha256": "102c968e8a0a9f8431d914995c92966abaeb5acd1d2993f11b80fb40212a3324"
     },
     {
       "path": "dist/orca_gear_generator_any.py",
-      "bytes": 366569,
-      "sha256": "01876cfa4c4e1776ca4a48319ab1fee0f163a56e9e642e3c992116fb26e3254d"
+      "bytes": 379322,
+      "sha256": "102c968e8a0a9f8431d914995c92966abaeb5acd1d2993f11b80fb40212a3324"
     }
   ],
   "source_hashes": {
@@ -347,16 +539,18 @@
     "exporters.py": "ca396050eb6b0794fb597ad03b39379563a6fb5ce392dddfecf29ea65fd8c3db",
     "fit_and_kinematics.py": "69b09c315492735535d99fe03c2c22a2cc0c752ef3c6070bbc5fb00386cfd52e",
     "involute_math.py": "b689626861a2fc65e1651fa4961863aea662db0bde1743e663a75b91e9e043c3",
-    "locale_catalog.py": "a0bcecc96da101abc93817f0c377d3592e7bcc61d2ef1bde33f60d7aa521c13e",
+    "language_packs.py": "765537ce2de4220e6328ba72f55b9662031af43da9462455641cacf5ece5eac9",
+    "locale_catalog.py": "0c61ac01a26b3c0892d2b0c199fd158a5630c0c6661d3f301f2befea85ad02e9",
     "mesh_generator.py": "eeb4891b5bd8171e99d59ee74829edab1916444d4f92506f6bfede08f618b03a",
     "plugin_main.py": "48ce7d82a4572f7df91d55d1c1f24354d5838087623c301a4cf71e3903c4a5ed",
     "presets_catalog.py": "966c1e66b7dbe8183cbb3fabfe3e2b1b98effdaef88d7abd9be64479f018c8f9",
     "schema.py": "bc890e79b8b388018bedbb4e9ac3927080f27ceda0f50ad2a148b644680d1813",
-    "studio_ui.py": "eda4fb57a2e2e2f36accbb2a36b64c288d3447aae629b633ef79c3e3195aba7b"
+    "studio_ui.py": "265237c214254cd0b7e2098832f3d95b1b472a8a37fb91d244b9b4da0e16002b"
   },
   "wheel_audit": {
     "members": [
       "gear_studio/__init__.py",
+      "gear_studio/language_packs.py",
       "gear_studio/locale_catalog.py",
       "gear_studio/schema.py",
       "gear_studio/involute_math.py",
@@ -371,6 +565,13 @@
       "orca_gear_generator-1.4.0.dist-info/METADATA",
       "orca_gear_generator-1.4.0.dist-info/WHEEL",
       "orca_gear_generator-1.4.0.dist-info/top_level.txt",
+      "gear_studio/locales/de.json",
+      "gear_studio/locales/en.json",
+      "gear_studio/locales/es.json",
+      "gear_studio/locales/fr.json",
+      "gear_studio/locales/it.json",
+      "gear_studio/locales/ja.json",
+      "gear_studio/locales/pt.json",
       "orca_gear_generator-1.4.0.dist-info/RECORD"
     ],
     "record_digests_and_sizes": "PASS",

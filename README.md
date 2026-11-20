@@ -8,6 +8,8 @@ Plugin nativo em Python para **OrcaSlicer 2.5.1+** que adiciona um estúdio CAD 
 
 **Versão 1.4.0:** seletor offline com **Português, English, Español, Italiano, Français, Deutsch e 日本語** na aba e no painel. A escolha manual fica salva e sincronizada; sem escolha, o plugin acompanha o idioma compatível do OrcaSlicer. Presets pessoais, nomes e números permanecem intactos. O bundle compacta apenas os dados de interface/tradução; a prévia libera as linhas de arame e os buffers do kit quando deixam de ser usados. A geometria de fabricação é idêntica à versão 1.3.1. Veja [idiomas, medições e limites / languages, measurements and limitations](docs/LANGUAGES_AND_PERFORMANCE.md).
 
+**Idiomas modulares:** para disponibilizar outro idioma, adicione apenas um JSON em `src/gear_studio/locales/`, gere os instaladores e reinicie o Orca. O seletor e a detecção regional reconhecem o arquivo automaticamente; não é preciso alterar Python/JavaScript. Veja o [formato e o exemplo de contribuição](docs/LANGUAGES_AND_PERFORMANCE.md#adicionar-outro-idioma).
+
 ---
 
 ## Principais Recursos

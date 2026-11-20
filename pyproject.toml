@@ -20,7 +20,7 @@ dependencies = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-gear_studio = ["icon.svg"]
+gear_studio = ["icon.svg", "locales/*.json"]
 
 [tool.orcaslicer.plugin]
 name = "Orca Gear Studio"

@@ -1,0 +1,38 @@
+{
+  "ok": true,
+  "baseline_commit": "5dfd61f5dc41d451ededa31e8e96cf154b2594d8",
+  "method": "Parse legacy rows directly from baseline AST; compare every source/translated pair against current JSON; semantic digest sorts keys without changing Unicode text.",
+  "languages": [
+    {
+      "code": "es",
+      "phrases": 229,
+      "old_and_new_semantic_sha256": "86e8f948ba7583e497b07a5ab3e3ba31d9dfd918e26d649ca6313157ff5f2662",
+      "pack_sha256": "07cf7011f6d4a90a8928c7b342defe851264d1b21195c8a44d66d8501491c701"
+    },
+    {
+      "code": "it",
+      "phrases": 229,
+      "old_and_new_semantic_sha256": "27f1776040f9c6ea47c9ff3ce831adf560b152295baa8c45d4d4e0df40a3cbf2",
+      "pack_sha256": "779a6e192dc7e0aedc1044d9d06b9931bce1425fb388e2b0b1d8a8b80fd38230"
+    },
+    {
+      "code": "fr",
+      "phrases": 229,
+      "old_and_new_semantic_sha256": "368a919fe822d466b8b9d92a1ebc671063f9ed66d9ad49f4bfa6444627c3310b",
+      "pack_sha256": "9761a259377135ac510ffbf6185e82ff57c1d0d8b0cd2a248e7d220aa421c003"
+    },
+    {
+      "code": "de",
+      "phrases": 229,
+      "old_and_new_semantic_sha256": "50efed2d35d03836453e4db0d1eec584c6de849d66ecdee5eae2863d7da5b60f",
+      "pack_sha256": "a1798ca5a8d09dd03ab87979f8b5d5ac0b8bc2f99344b0da0effbfdbca83167a"
+    },
+    {
+      "code": "ja",
+      "phrases": 229,
+      "old_and_new_semantic_sha256": "fbf15d83271c87fd9fde350351886e2e876c1b577b48212921be79234efd777f",
+      "pack_sha256": "5ee747b754e9683225b194b82754e76f7ce22ec88e5f736c8adead0752dc4b8a"
+    }
+  ],
+  "synthetic_files_in_production": []
+}

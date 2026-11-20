@@ -2,10 +2,11 @@
 from __future__ import annotations
 import argparse
 import json
+import os
 from pathlib import Path
 import sys
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(os.environ.get("ORCA_LOCALE_SOURCE_ROOT") or Path(__file__).resolve().parents[1])
 sys.path.insert(0, str(ROOT / "src"))
 from gear_studio.schema import DEFAULT_PARAMS
 from gear_studio.studio_ui import get_studio_html

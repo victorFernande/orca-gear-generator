@@ -35,6 +35,7 @@ async function main(){
   fs.mkdirSync(output,{recursive:true});
   cp.execFileSync(process.env.ORCA_TEST_PYTHON || 'python',['-B','-W','error',path.join(__dirname,'render_locale_fixtures.py'),temp],{cwd:root});
   const pages=JSON.parse(fs.readFileSync(path.join(temp,'pages.json'),'utf8'));
+  const languageCount = new Set(pages.map(x=>x.lang)).size;
   const server=http.createServer((req,res)=>{
     const name=path.basename(new URL(req.url,'http://localhost').pathname);
     if(name==='favicon.ico'){res.writeHead(204);return res.end()}
@@ -56,7 +57,7 @@ async function main(){
       await page.waitForFunction(()=>window.__glAudit?.uploads.length>=10);
       assert.equal(await page.locator('html').getAttribute('lang'),item.lang);
       assert.equal(await page.locator('#lang-select').inputValue(),item.lang);
-      assert.equal(await page.locator('#lang-select option').count(),7);
+      assert.equal(await page.locator('#lang-select option').count(),languageCount);
       assert.equal(await page.locator('.preset-name').first().textContent(),'Save','user text was translated');
       const initial=await stats(page);
       const hash=crypto.createHash('sha256').update(JSON.stringify(initial.live)).digest('hex');
@@ -119,7 +120,7 @@ async function main(){
     await context.close();
     assert.deepEqual(errors,[]);
     const source_hashes={};for(const name of ['studio_ui.py','locale_catalog.py','plugin_main.py'])source_hashes[name]=crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'src','gear_studio',name))).digest('hex');
-    const report={ok:true,pages:records,console_errors:errors,geometry_hash:baselineHash,source_hashes,wire_bytes:{off:wireOff.live.reduce((a,x)=>a+x.bytes,0),on:wireOn.live.reduce((a,x)=>a+x.bytes,0),off_again:wireFreed.live.reduce((a,x)=>a+x.bytes,0)},scope:'28 isolated Chromium pages, locale persistence/late acknowledgements, preserved user names, bridge export request, exact per-locale GL buffers and lazy-wire lifecycle; no native app or actual export'};
+    const report={ok:true,pages:records,console_errors:errors,geometry_hash:baselineHash,source_hashes,wire_bytes:{off:wireOff.live.reduce((a,x)=>a+x.bytes,0),on:wireOn.live.reduce((a,x)=>a+x.bytes,0),off_again:wireFreed.live.reduce((a,x)=>a+x.bytes,0)},scope:records.length+' isolated Chromium pages, locale persistence/late acknowledgements, preserved user names, bridge export request, exact per-locale GL buffers and lazy-wire lifecycle; no native app or actual export'};
     fs.writeFileSync(path.join(output,'report.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({ok:true,pages:records.length,wire_bytes:report.wire_bytes}));
   } finally {if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));fs.rmSync(temp,{recursive:true,force:true})}
 }
