@@ -698,7 +698,7 @@ class TestExportersBridgeAndBundle(unittest.TestCase):
         self.assertEqual(plugin_meta.get("name"), "Orca Gear Studio")
         self.assertTrue(bool(plugin_meta.get("description")))
         self.assertTrue(bool(plugin_meta.get("author")))
-        self.assertEqual(plugin_meta.get("version"), "1.3.1")
+        self.assertEqual(plugin_meta.get("version"), "1.4.0")
         self.assertTrue(Path(build_mod.DIST_ANY_BUNDLE_PATH).is_file())
 
         whl_path = Path(build_mod.build_wheel())

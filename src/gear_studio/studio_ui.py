@@ -13,6 +13,7 @@ from __future__ import annotations
 import copy
 import json
 from typing import Any
+from .locale_catalog import TRANSLATION_CATALOG, LANGUAGE_METADATA, LANGUAGE_PACKS, normalize_language
 
 if "DEFAULT_PARAMS" not in globals():
     try:
@@ -40,7 +41,7 @@ def _studio_ui_safe_json(payload: dict[str, Any]) -> str:
 
 
 _STUDIO_UI_HTML_TEMPLATE = r"""<!DOCTYPE html>
-<html lang="__INITIAL_LANG__" data-theme="__INITIAL_THEME__">
+<html lang="__INITIAL_LANG__" dir="__INITIAL_DIR__" data-theme="__INITIAL_THEME__">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -432,6 +433,8 @@ button, input, select {
   text-align: center;
   transition: all 0.12s;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .quick-pill:hover {
   border-color: var(--border-strong);
@@ -582,6 +585,9 @@ button, input, select {
 
 .seg-btn {
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   padding: 5px 5px;
   border: none;
   border-radius: 4px;
@@ -1389,7 +1395,8 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
         <span data-i18n="btn_random">Aleatório</span>
       </button>
       <button id="btn-reset" class="btn btn-icon" title="Reset">↺</button>
-      <button id="btn-lang" class="btn btn-icon" title="Português / English">PT</button>
+      <select id="lang-select" class="btn" aria-label="Language" title="Language" style="max-width:116px;padding:4px 6px;"></select>
+      <button id="btn-lang" class="btn btn-icon" title="Language" hidden style="display:none">PT</button>
       <button id="btn-theme" class="btn btn-icon" title="Dark / Light">☾</button>
     </div>
   </header>
@@ -1949,6 +1956,22 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
   "use strict";
 
   const BOOT_PAYLOAD = __ORCA_GEAR_STUDIO_BOOT_JSON__;
+  const LOCALES = BOOT_PAYLOAD.locales;
+  const LANGUAGES = BOOT_PAYLOAD.languages;
+  function normalizeLang(value) {
+    const raw = String(value || "").trim().toLowerCase().split(".")[0].replace(/_/g, "-");
+    if (!raw) return "pt";
+    let candidate = raw.split("@")[0];
+    while (candidate) {
+      if (LANGUAGES.some(function(x) { return x.code === candidate; })) return candidate;
+      candidate = candidate.includes("-") ? candidate.slice(0, candidate.lastIndexOf("-")) : "";
+    }
+    return "en";
+  }
+  let manualLanguage = null;
+  const languageClientId = Date.now().toString(36) + Math.random().toString(36).slice(2);
+  let pendingLanguageRequest = null, deferredLanguageReply = null, lastLanguageRevision = -1, languageRequestSequence = 0;
+  try { manualLanguage = localStorage.getItem("orca-gear-language"); } catch (_) {}
   const DEG2RAD = Math.PI / 180.0;
   const RAD2DEG = 180.0 / Math.PI;
   const TWO_PI = 2.0 * Math.PI;
@@ -3085,9 +3108,10 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
   // 5. Application State, Simulation State & Undo/Redo Stack
   // ==========================================================================
   const initCtx = (BOOT_PAYLOAD && BOOT_PAYLOAD.initial_context) ? BOOT_PAYLOAD.initial_context : {};
+  if (initCtx.lang_explicit) manualLanguage = normalizeLang(initCtx.lang);
   const state = {
     mode: BOOT_PAYLOAD.mode === "dock" ? "dock" : "page",
-    lang: initCtx.lang === "en" ? "en" : "pt",
+    lang: normalizeLang(initCtx.lang_explicit ? initCtx.lang : (manualLanguage || initCtx.lang)),
     theme: initCtx.theme === "light" ? "light" : "dark",
     printer: Object.assign(
       {
@@ -3133,8 +3157,95 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
   };
 
   function tr(key) {
-    const dict = I18N[state.lang] || I18N.pt;
-    return dict[key] !== undefined ? dict[key] : key;
+    const english = I18N.en[key] || key;
+    const contextualKey = "ui:" + key + "::" + english;
+    const catalog = LOCALES[state.lang] || {};
+    if (Object.prototype.hasOwnProperty.call(catalog, contextualKey)) return catalog[contextualKey];
+    if (Object.prototype.hasOwnProperty.call(catalog, english)) return localize(english);
+    // Compatibility fallback for an authored PT phrase absent from the data
+    // pack; a supplied JSON translation always takes precedence, including PT.
+    return state.lang === "pt" ? (I18N.pt[key] || english) : localize(english);
+  }
+
+  let templateLocale = null, localizedTemplates = [];
+  function localize(text) {
+    const source = String(text == null ? "" : text);
+    const dict = LOCALES[state.lang] || {};
+    if (Object.prototype.hasOwnProperty.call(dict, source)) return dict[source];
+    if (templateLocale !== state.lang) {
+      templateLocale = state.lang;
+      localizedTemplates = Object.keys(dict).filter(function(k) { return /\{[a-z][a-z0-9_]*\}/.test(k); }).map(function(key) {
+        const names = [];
+        const pattern = key.split(/(\{[a-z][a-z0-9_]*\})/).map(function(piece) {
+          if (/^\{[a-z][a-z0-9_]*\}$/.test(piece)) { names.push(piece); return "(.+?)"; }
+          return piece.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        }).join("");
+        return {match: new RegExp("^" + pattern + "$"), names: names, target: dict[key]};
+      });
+    }
+    for (const entry of localizedTemplates) {
+      const matches = entry.match.exec(source);
+      if (!matches) continue;
+      let target = entry.target;
+      entry.names.forEach(function(name, i) { target = target.split(name).join(matches[i+1]); });
+      return target;
+    }
+    return source;
+  }
+
+  function bilingual(en, pt) {
+    if (Object.prototype.hasOwnProperty.call(LOCALES[state.lang] || {}, en)) return localize(en);
+    return state.lang === "pt" ? pt : localize(en);
+  }
+
+  function changeLanguage(value, persist) {
+    state.lang = normalizeLang(value);
+    if (persist) {
+      manualLanguage = state.lang;
+      try { localStorage.setItem("orca-gear-language", state.lang); } catch (_) {}
+      pendingLanguageRequest = languageClientId + "-" + (++languageRequestSequence);
+      if (!sendToHost({type: "ui_preferences", lang: state.lang, language_request_id: pendingLanguageRequest})) pendingLanguageRequest = null;
+    }
+    applyThemeAndLanguage();
+  }
+
+  // Only authored static UI strings are registered; inputs, model names and user
+  // preset content are never inspected or rewritten by the language switch.
+  const staticTranslations = [];
+  function registerStaticTranslations() {
+    const aliases = {
+      "Dark / Light": "Toggle Light/Dark Theme", "Gear Pair Name": "Gear pair name",
+      "Nome do preset...": "Preset name", "Abrir Pasta de Exportação": "Open export folder",
+      "Abrir Pasta": "Open export folder", "45° Sem Suporte": "45° Support-free",
+      "✂ Corte Z": "✂ Z cut", "✂ Corte Y": "✂ Y cut", "0° (Reta)": "0° (Spur)",
+      "🎯 Preset Rolamento 608ZZ (Ø22.2×7mm)": "🎯 608ZZ Bearing Preset (Ø22.2×7mm)"
+    };
+    for (const key of Object.keys(I18N.en)) aliases[I18N.pt[key]] = I18N.en[key];
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      const parent = node.parentElement;
+      if (!parent || parent.closest("script,style,input,textarea,select,[data-i18n],#presets-grid,#toast-banner")) continue;
+      const raw = node.textContent, trimmed = raw.trim(), source = aliases[trimmed] || trimmed;
+      if (Object.values(LOCALES).some(function(dict) { return Object.prototype.hasOwnProperty.call(dict, source); })) staticTranslations.push({node: node, source: source, original: trimmed, prefix: raw.slice(0, raw.indexOf(trimmed)), suffix: raw.slice(raw.indexOf(trimmed)+trimmed.length)});
+    }
+    document.querySelectorAll("[title],[placeholder],[aria-label]").forEach(function(el) {
+      for (const attr of ["title", "placeholder", "aria-label"]) {
+        const original = el.getAttribute(attr);
+        if (!original) continue;
+        const source = aliases[original] || original;
+        if (Object.values(LOCALES).some(function(dict) { return Object.prototype.hasOwnProperty.call(dict, source); })) staticTranslations.push({node: el, attr: attr, source: source, original: original});
+      }
+    });
+  }
+
+  function translateStaticUI() {
+    for (const entry of staticTranslations) {
+      const supplied = Object.prototype.hasOwnProperty.call(LOCALES[state.lang] || {}, entry.source);
+      const text = supplied ? localize(entry.source) : (state.lang === "pt" ? entry.original : localize(entry.source));
+      if (entry.attr) entry.node.setAttribute(entry.attr, text);
+      else entry.node.textContent = entry.prefix + text + entry.suffix;
+    }
   }
 
   function getByPath(obj, path) {
@@ -3287,7 +3398,7 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
     if (!msg || typeof msg !== "object" || typeof msg.type !== "string") return;
 
     if (msg.type === "init_state") {
-      if (msg.lang === "en" || msg.lang === "pt") state.lang = msg.lang;
+      if (msg.lang && !manualLanguage) state.lang = normalizeLang(msg.lang);
       const injectedTheme = detectHostInjectedTheme();
       if (injectedTheme && !msg.theme_explicit) {
         state.theme = injectedTheme;
@@ -3312,6 +3423,28 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
       rebuildBedGeometry();
       rebuildScene(false);
       fitCameraToScene();
+      return;
+    }
+
+    if (msg.type === "ui_preferences") {
+      if (pendingLanguageRequest && msg.language_request_id !== pendingLanguageRequest) {
+        // An earlier request from this view must not undo its latest choice.
+        // A newer request from the other view must survive until our own ACK.
+        const isOwnReply = String(msg.language_request_id || "").startsWith(languageClientId + "-");
+        if (!isOwnReply && Number.isFinite(msg.language_revision) &&
+            (!deferredLanguageReply || msg.language_revision > deferredLanguageReply.language_revision)) deferredLanguageReply = msg;
+        return;
+      }
+      if (pendingLanguageRequest) {
+        pendingLanguageRequest = null;
+        if (deferredLanguageReply && deferredLanguageReply.language_revision > Number(msg.language_revision)) msg = deferredLanguageReply;
+        deferredLanguageReply = null;
+      }
+      if (Number.isFinite(msg.language_revision) && msg.language_revision < lastLanguageRevision) return;
+      if (Number.isFinite(msg.language_revision)) lastLanguageRevision = msg.language_revision;
+      manualLanguage = normalizeLang(msg.lang);
+      try { localStorage.setItem("orca-gear-language", manualLanguage); } catch (_) {}
+      changeLanguage(msg.lang, false);
       return;
     }
 
@@ -4429,7 +4562,7 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
         nrm: gl.createBuffer(),
         ovh: gl.createBuffer(),
         idx: gl.createBuffer(),
-        wire: gl.createBuffer(),
+        wire: null,
         indexCount: 0,
         indexType: 0,
         wireCount: 0
@@ -4446,7 +4579,6 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
     const posArr = new Float32Array(col.pos);
     const nrmArr = new Float32Array(col.nrm);
     const ovhArr = new Float32Array(col.ovh);
-    const wireArr = new Float32Array(col.wire);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, part.pos);
     gl.bufferData(gl.ARRAY_BUFFER, posArr, usage);
@@ -4465,9 +4597,24 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
     }
     part.indexCount = col.idx.length;
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, part.wire);
-    gl.bufferData(gl.ARRAY_BUFFER, wireArr, usage);
-    part.wireCount = wireArr.length / 3;
+    if (state.wireframe && col.wire.length) {
+      const wireArr = new Float32Array(col.wire);
+      if (!part.wire) part.wire = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, part.wire);
+      gl.bufferData(gl.ARRAY_BUFFER, wireArr, usage);
+      part.wireCount = wireArr.length / 3;
+    } else if (part.wire) {
+      gl.deleteBuffer(part.wire);
+      part.wire = null;
+      part.wireCount = 0;
+    }
+  }
+
+  function releasePartGPU(key) {
+    const part = gpuParts[key];
+    if (!gl || !part) return;
+    for (const field of ["pos", "nrm", "ovh", "idx", "wire"]) if (part[field]) gl.deleteBuffer(part[field]);
+    delete gpuParts[key];
   }
 
   function rebuildBedGeometry() {
@@ -5081,10 +5228,10 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
       const lblCol = isLight ? "#64748b" : "#8b96a8";
       const valCol = isLight ? "#0f172a" : "#eef2f7";
       const rows = [
-        [state.lang === "en" ? "Ratio" : "Relação", "1 : " + g.ratio.toFixed(2) + " (" + g.pinion.teeth + ":" + g.gear.teeth + ")"],
-        [state.lang === "en" ? "Out Speed" : "Saída G2", rep.kinematics.rpm_g2.toFixed(1) + " RPM"],
-        [state.lang === "en" ? "Contact ε_γ" : "Contato ε_γ", rep.contact.total_contact_ratio.toFixed(2) + " (εα " + rep.contact.transverse_ratio.toFixed(2) + ")"],
-        [state.lang === "en" ? "Clearance" : "Folga Mín.", (isJammed ? "0.000 COLISÃO" : state.liveCollision.minDistMm.toFixed(3) + " mm")]
+        [bilingual("Ratio", "Relação"), "1 : " + g.ratio.toFixed(2) + " (" + g.pinion.teeth + ":" + g.gear.teeth + ")"],
+        [bilingual("Out Speed", "Saída G2"), rep.kinematics.rpm_g2.toFixed(1) + " RPM"],
+        [bilingual("Contact ε_γ", "Contato ε_γ"), rep.contact.total_contact_ratio.toFixed(2) + " (εα " + rep.contact.transverse_ratio.toFixed(2) + ")"],
+        [bilingual("Clearance", "Folga Mín."), (isJammed ? "0.000 " + bilingual("COLLISION", "COLISÃO") : state.liveCollision.minDistMm.toFixed(3) + " mm")]
       ];
 
       const rowStep = Math.max(22, Math.floor((boxH - 10) / rows.length));
@@ -5175,6 +5322,8 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
         const jg = buildFitKitJigAndGaugeMeshes(p, state.geom);
         uploadCollectorToPart("jig_base", jg.jig);
         uploadCollectorToPart("bore_gauge", jg.gauge);
+      } else {
+        ["sector_pinion", "sector_gear", "jig_base", "bore_gauge"].forEach(releasePartGPU);
       }
     }
 
@@ -5200,7 +5349,7 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
       host.className = "ctrl-row";
       host.innerHTML =
         '<div class="ctrl-top">' +
-          '<span class="ctrl-label" data-spec-label="' + spec.path + '">' + (state.lang === "en" ? spec.en : spec.pt) + '</span>' +
+          '<span class="ctrl-label" data-spec-label="' + spec.path + '">' + bilingual(spec.en, spec.pt) + '</span>' +
           '<div class="ctrl-val-wrap">' +
             dualHtml +
             '<input class="ctrl-num" type="number" min="' + spec.min + '" max="' + spec.max + '" step="' + spec.step + '" value="' + Number(initVal).toFixed(decs) + '" />' +
@@ -5346,8 +5495,8 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
     const shiftNote = document.getElementById("badge-eff-shifts");
     if (shiftNote) {
       const fmtS = function (v) { return (v >= 0 ? "+" : "") + v.toFixed(2); };
-      shiftNote.textContent = "x₁ efetivo: " + fmtS(g.x1) + " · x₂ efetivo: " + fmtS(g.x2) +
-        (g.pinion.undercut || g.gear.undercut ? " ⚠ Undercut" : " ✓ Sem Undercut");
+      shiftNote.textContent = "x₁ " + bilingual("effective", "efetivo") + ": " + fmtS(g.x1) + " · x₂ " + bilingual("effective", "efetivo") + ": " + fmtS(g.x2) +
+        " " + (g.pinion.undercut || g.gear.undercut ? bilingual("⚠ Undercut", "⚠ Undercut") : bilingual("✓ No undercut", "✓ Sem Undercut"));
     }
 
     // 4. Body Pane Visibility & Conditional Bore / Hub / Recess / Lightening Controls
@@ -5386,8 +5535,8 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
     const playBtn = document.getElementById("btn-sim-play");
     if (playBtn) {
       playBtn.textContent = state.simPlaying
-        ? (state.lang === "en" ? "⏸ Pause" : "⏸ Pausar")
-        : (state.lang === "en" ? "▶ Play" : "▶ Girar");
+        ? (bilingual("⏸ Pause", "⏸ Pausar"))
+        : (bilingual("▶ Play", "▶ Girar"));
     }
     const dirBtn = document.getElementById("btn-sim-dir");
     if (dirBtn) {
@@ -5480,13 +5629,13 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
     const da = state.params.center_distance_offset_mm;
     setTxt("dv-cd", Number(fit.center_distance_mm).toFixed(2) + " (" + (da >= 0 ? "+" : "") + da.toFixed(2) + ")");
     const clrVal = isJammed ? 0.0 : Number(fit.min_tooth_clearance_mm);
-    setTxt("dv-clr", isJammed ? "0.00 (COLISÃO)" : clrVal.toFixed(3) + " mm", isJammed ? "var(--status-crit)" : "var(--status-ok)");
+    setTxt("dv-clr", isJammed ? "0.00 (" + bilingual("COLLISION", "COLISÃO") + ")" : clrVal.toFixed(3) + " mm", isJammed ? "var(--status-crit)" : "var(--status-ok)");
     setTxt("dv-t2", Number(kin.torque_g2_nm).toFixed(2) + " N·m");
     setTxt("dv-rpm2", Number(kin.rpm_g2).toFixed(1) + " rpm · " + Number(kin.pitch_line_velocity_mm_s).toFixed(0) + " mm/s");
 
     const ovh = Number(prt.helix_overhang_deg || 0);
-    setTxt("dv-ovh", ovh.toFixed(0) + "° " + (prt.supports_needed ? "⚠ Suporte" : "✓ Livre"), prt.supports_needed ? "var(--status-warn)" : "var(--status-ok)");
-    setTxt("dv-walls", String(prt.recommended_wall_loops || 4) + " loops + Gyroid");
+    setTxt("dv-ovh", ovh.toFixed(0) + "° " + (prt.supports_needed ? bilingual("⚠ Supports", "⚠ Suporte") : bilingual("✓ Support-free", "✓ Livre")), prt.supports_needed ? "var(--status-warn)" : "var(--status-ok)");
+    setTxt("dv-walls", String(prt.recommended_wall_loops || 4) + " " + bilingual("walls + Gyroid", "perímetros + Gyroid"));
     setTxt("dv-wgt", "~" + Math.max(1, Math.round(prt.estimated_weight_g || 20)) + " g · " + Math.max(5, Math.round(prt.estimated_print_time_min || 25)) + " min");
     const fp = Array.isArray(prt.pair_footprint_mm) ? prt.pair_footprint_mm : [100, 60];
     setTxt("dv-bed", Math.round(fp[0]) + "×" + Math.round(fp[1]) + " mm", prt.fits_bed === false ? "var(--status-crit)" : "");
@@ -5501,11 +5650,11 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
         const div = document.createElement("div");
         if (typeof it === "string") {
           div.className = "issue-item warn";
-          div.textContent = it;
+          div.textContent = localize(it);
         } else {
           const sev = String(it.severity || "ok").toLowerCase();
           div.className = "issue-item " + (sev === "critical" || sev === "crit" ? "critical" : (sev === "warn" || sev === "warning" ? "warn" : "ok"));
-          div.textContent = state.lang === "en" ? (it.en || it.message_en || it.pt || "") : (it.pt || it.message_pt || it.en || "");
+          div.textContent = bilingual(it.en || it.message_en || it.pt || "", it.pt || it.message_pt || it.en || "");
         }
         issuesEl.appendChild(div);
       }
@@ -5592,12 +5741,10 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
       const card = document.createElement("div");
       card.className = "preset-card" + (item.id === state.activePresetId ? " active" : "");
 
-      const title = state.lang === "en"
-        ? (item.name_en || item.title_en || item.name || item.name_pt || "Preset")
-        : (item.name_pt || item.title_pt || item.name || item.name_en || "Preset");
-      const desc = state.lang === "en"
-        ? (item.desc_en || item.description_en || item.category || "")
-        : (item.desc_pt || item.description_pt || item.category || "");
+      const title = item._isUser ? (item.name || item.name_en || item.name_pt || "Preset")
+        : bilingual(item.name_en || item.title_en || item.name || item.name_pt || "Preset", item.name_pt || item.title_pt || item.name || item.name_en || "Preset");
+      const desc = item._isUser ? (item.desc_en || item.description_en || "")
+        : bilingual(item.desc_en || item.description_en || item.category || "", item.desc_pt || item.description_pt || item.category || "");
 
       card.innerHTML =
         '<div class="preset-thumb">' + makePresetMiniSvg(item.params || {}) + '</div>' +
@@ -5616,7 +5763,7 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
         const delBtn = document.createElement("button");
         delBtn.className = "preset-del-btn";
         delBtn.textContent = "×";
-        delBtn.title = "Delete";
+        delBtn.title = localize("Delete");
         delBtn.addEventListener("click", function (ev) {
           ev.stopPropagation();
           if (!sendToHost({ type: "preset_delete", id: item.id })) {
@@ -5666,10 +5813,22 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
     if (typeof document === "undefined") return;
     document.documentElement.setAttribute("data-theme", state.theme);
     document.documentElement.setAttribute("lang", state.lang);
+    const languageMeta = LANGUAGES.find(function(x) { return x.code === state.lang; });
+    document.documentElement.setAttribute("dir", languageMeta ? languageMeta.direction : "ltr");
     if (document.body) document.body.setAttribute("data-mode", state.mode);
 
     const langBtn = document.getElementById("btn-lang");
     if (langBtn) langBtn.textContent = state.lang.toUpperCase();
+    const selector = document.getElementById("lang-select");
+    if (selector) {
+      if (!selector.options.length) LANGUAGES.forEach(function(x) { selector.add(new Option(x.native_name, x.code)); });
+      selector.value = state.lang;
+    }
+    translateStaticUI();
+    const cutLabel = document.getElementById("lbl-cut-axis");
+    if (cutLabel) cutLabel.textContent = bilingual(state.crossCutAxis === "z" ? "✂ Z cut" : "✂ Y cut", state.crossCutAxis === "z" ? "✂ Corte Z" : "✂ Corte Y");
+    const crossCutLabel = document.getElementById("lbl-cross-cut");
+    if (crossCutLabel) crossCutLabel.textContent = state.crossCutPct ? state.crossCutPct + "%" : localize("Off");
     const themeBtn = document.getElementById("btn-theme");
     if (themeBtn) themeBtn.textContent = state.theme === "dark" ? "☾" : "☀";
 
@@ -5687,13 +5846,16 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
     const nodes = document.querySelectorAll("[data-i18n]");
     for (let i = 0; i < nodes.length; i++) {
       const k = nodes[i].getAttribute("data-i18n");
-      if (k) nodes[i].textContent = tr(k);
+      if (k) {
+        nodes[i].textContent = tr(k);
+        if (nodes[i].matches("button")) nodes[i].title = tr(k);
+      }
     }
 
     const paths = Object.keys(sliderRefs);
     for (let i = 0; i < paths.length; i++) {
       const ref = sliderRefs[paths[i]];
-      if (ref.labelEl) ref.labelEl.textContent = state.lang === "en" ? ref.spec.en : ref.spec.pt;
+      if (ref.labelEl) ref.labelEl.textContent = bilingual(ref.spec.en, ref.spec.pt);
     }
 
     updateDerivedBadges();
@@ -5719,7 +5881,7 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
   function showToast(text, isError) {
     const el = document.getElementById("toast-banner");
     if (!el) return;
-    el.textContent = text;
+    el.textContent = localize(text);
     el.classList.toggle("error", Boolean(isError));
     el.classList.add("visible");
     if (toastTimer) clearTimeout(toastTimer);
@@ -5794,15 +5956,19 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
       const cutEl = document.getElementById("inp-cross-cut");
       const cutLbl = document.getElementById("lbl-cross-cut");
       if (cutEl) cutEl.value = "0";
-      if (cutLbl) cutLbl.textContent = "Off";
+      if (cutLbl) cutLbl.textContent = localize("Off");
       syncControlsFromState();
       setViewportMode("meshed");
       scheduleHostAnalyze();
     });
 
+    on("lang-select", "change", function(e) { changeLanguage(e.target.value, true); });
     on("btn-lang", "click", function () {
-      state.lang = state.lang === "pt" ? "en" : "pt";
-      applyThemeAndLanguage();
+      const index = LANGUAGES.findIndex(function(x) { return x.code === state.lang; });
+      changeLanguage(LANGUAGES[(index + 1) % LANGUAGES.length].code, true);
+    });
+    window.addEventListener("storage", function(e) {
+      if (e.key === "orca-gear-language" && e.newValue) { manualLanguage = e.newValue; changeLanguage(e.newValue, false); }
     });
 
     on("btn-theme", "click", function () {
@@ -6082,7 +6248,8 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
       state.wireframe = !state.wireframe;
       const b = document.getElementById("btn-vp-wire");
       if (b) b.classList.toggle("active", state.wireframe);
-      requestRender();
+      // Rebuild the exact authored wire data on demand, freeing it when hidden.
+      rebuildScene(false);
     });
 
     // Camera Presets (`Perspectiva`, `Topo (Engrenamento)`, `Frontal (Hélice)`, `Reset`)
@@ -6101,14 +6268,14 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
     on("lbl-cut-axis", "click", function () {
       state.crossCutAxis = state.crossCutAxis === "z" ? "y" : "z";
       const lbl = document.getElementById("lbl-cut-axis");
-      if (lbl) lbl.textContent = state.crossCutAxis === "z" ? "✂ Corte Z" : "✂ Corte Y";
+      if (lbl) lbl.textContent = bilingual(state.crossCutAxis === "z" ? "✂ Z cut" : "✂ Y cut", state.crossCutAxis === "z" ? "✂ Corte Z" : "✂ Corte Y");
       requestRender();
     });
 
     on("inp-cross-cut", "input", function (e) {
       state.crossCutPct = clampInt(e.target.value, 0, 0, 100);
       const lbl = document.getElementById("lbl-cross-cut");
-      if (lbl) lbl.textContent = state.crossCutPct === 0 ? "Off" : (state.crossCutPct + "%");
+      if (lbl) lbl.textContent = state.crossCutPct === 0 ? localize("Off") : (state.crossCutPct + "%");
       requestRender();
     });
 
@@ -6117,7 +6284,7 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
       const inp = document.getElementById("inp-cross-cut");
       const lbl = document.getElementById("lbl-cross-cut");
       if (inp) inp.value = String(state.crossCutPct);
-      if (lbl) lbl.textContent = state.crossCutPct === 0 ? "Off" : "50%";
+      if (lbl) lbl.textContent = state.crossCutPct === 0 ? localize("Off") : "50%";
       requestRender();
     });
 
@@ -6285,6 +6452,7 @@ body[data-mode="dock"][data-dock-tab="presets"] .presets-grid {
     if (typeof document === "undefined" || !document.getElementById) return;
     const hostTheme = detectHostInjectedTheme();
     if (hostTheme) state.theme = hostTheme;
+    registerStaticTranslations();
     buildSliderWidgets();
     initWebGLViewport();
     bindUIControls();
@@ -6316,7 +6484,8 @@ def get_studio_html(mode: str = "page", initial_context: dict[str, Any] | None =
     ctx: dict[str, Any] = copy.deepcopy(initial_context) if isinstance(initial_context, dict) else {}
 
     lang_raw = str(ctx.get("lang") or "pt").strip().lower()
-    norm_lang = "en" if lang_raw.startswith("en") else "pt"
+    norm_lang = normalize_language(lang_raw)
+    ctx["lang"] = norm_lang
 
     theme_raw = str(ctx.get("theme") or "dark").strip().lower()
     norm_theme = "light" if theme_raw == "light" else "dark"
@@ -6326,6 +6495,8 @@ def get_studio_html(mode: str = "page", initial_context: dict[str, Any] | None =
 
     boot_payload: dict[str, Any] = {
         "mode": norm_mode,
+        "locales": TRANSLATION_CATALOG,
+        "languages": LANGUAGE_METADATA,
         "initial_context": ctx,
         "fallback_params": fallback_params,
         "fallback_presets": fallback_presets,
@@ -6333,6 +6504,7 @@ def get_studio_html(mode: str = "page", initial_context: dict[str, Any] | None =
 
     html = _STUDIO_UI_HTML_TEMPLATE
     html = html.replace("__INITIAL_LANG__", norm_lang)
+    html = html.replace("__INITIAL_DIR__", LANGUAGE_PACKS[norm_lang]["direction"])
     html = html.replace("__INITIAL_THEME__", norm_theme)
     html = html.replace("__INITIAL_MODE__", norm_mode)
     html = html.replace("__ORCA_GEAR_STUDIO_BOOT_JSON__", _studio_ui_safe_json(boot_payload))

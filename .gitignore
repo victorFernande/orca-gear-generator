@@ -17,3 +17,21 @@ venv/
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Local diagnostics, exports and secrets (distribution files stay tracked)
+test-output/
+exports/
+personal-exports/
+.env
+.env.*
+!.env.example
+*.log
+*.tmp
+*.bak
+*.local.json
+credentials.json
+secrets.json
+ui_preferences.json
+.install_state.json
+install_state.json
+node_modules/

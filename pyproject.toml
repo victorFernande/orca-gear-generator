@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "orca-gear-generator"
-version = "1.3.1"
+version = "1.4.0"
 description = "Estudio parametrico 3D de engrenagens com simulacao de giro, testes de encaixe e envio direto para a mesa"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -20,10 +20,10 @@ dependencies = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-gear_studio = ["icon.svg"]
+gear_studio = ["icon.svg", "locales/*.json"]
 
 [tool.orcaslicer.plugin]
 name = "Orca Gear Studio"
 description = "Estudio parametrico 3D de engrenagens com simulacao de giro, testes de encaixe e envio direto para a mesa"
 author = "Orca Gear Studio"
-version = "1.3.1"
+version = "1.4.0"

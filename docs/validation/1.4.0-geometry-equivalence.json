@@ -1,0 +1,309 @@
+{
+  "ok": true,
+  "baseline_commit": "3c547d4ef71a4c518addb8e480fa26c6649e1153",
+  "method": "actual high-resolution generation of all12preset pairs plus4calibrationparts; compare four typed array byte digests, bounds and volume; source byte comparison of five manufacturing/export modules",
+  "parts": [
+    {
+      "preset": "spur_classic_1_2",
+      "part": "pinion",
+      "hashes": {
+        "vertices": "bfdc8627eee6f70cdf0017c259d68431f60420deed4791e20f5bc765fd500ab1",
+        "triangles": "c035c178a079858104aa06b190dcc9434287826ea774fea4b1b3273074c5df32",
+        "face_normals": "b726e1786b8c36e6e3975b61c851c27794844d5f47d22381c07a571fa3b04d11",
+        "overhang_angles_deg": "05513e9347e068aa08583cde6f5d240b5544d0d2b0a094273cbb85f9ae8d5eab"
+      }
+    },
+    {
+      "preset": "spur_classic_1_2",
+      "part": "gear",
+      "hashes": {
+        "vertices": "997d64f06308a867d2002f83b2713f67dbb402d5c4bbbea15e82af96257c8fb9",
+        "triangles": "de15b9c205c4fb591db9e13eda696cb44456368e0d5f381e278f180d76f3fc8b",
+        "face_normals": "71a249abed7c72b52659b28a9e1874326088e3646d2e5b1fa46fa7f1919979b8",
+        "overhang_angles_deg": "3a20e1fddb4e331d201957c879d8c13ce4344e2e24fb62394263ae18a75560b7"
+      }
+    },
+    {
+      "preset": "helical_silent_45",
+      "part": "pinion",
+      "hashes": {
+        "vertices": "d52b224353da0f67d41956959007112d2878d6c9f46889eed9417586a1f74d0c",
+        "triangles": "6277e7a5ae0c6c6fcaed06fa50bf77e18b2219eea77c3306e8fa2be406d52d41",
+        "face_normals": "70cae3cd18ba67ab4cca9d84f49db3b62a750e2b513f4241123fdba2bf5ce42c",
+        "overhang_angles_deg": "11296cc9a2857bea570d030aeed2ddb75749523d0703ccbbaae3f8b28321b5ee"
+      }
+    },
+    {
+      "preset": "helical_silent_45",
+      "part": "gear",
+      "hashes": {
+        "vertices": "08f37d6a1c5e6f69164dd3c568594cb2b40abb2e6a505a0f486ac6728cfa932d",
+        "triangles": "85fa89f1e34a71c3c50871ec6570e61813f551004eb0721e0bc39619929582fd",
+        "face_normals": "b4e4884f7a985ee2e4a84a7d5dc6f2d656a0d19ddf75cc020c77d4f7d611453d",
+        "overhang_angles_deg": "fb4b20f3df93421fa0f4dbad92b434f77c77e3a1af74c4d22e98ed6a911c4196"
+      }
+    },
+    {
+      "preset": "herringbone_extruder_1_4",
+      "part": "pinion",
+      "hashes": {
+        "vertices": "4b355914618bc69b77940c2bf4fdeb9d7cd6a83fce71b66b0a2d8f7e5127fcd4",
+        "triangles": "fda5823a5e46a5c0c4a99330e1043942ed0e50b7368444149c6c718dff91eb67",
+        "face_normals": "2ee54b6dc5285378d9f6d200e369051c3449220a083fd7eea20d5bb92c6a7e67",
+        "overhang_angles_deg": "8942938911f24818e588abd8100ebe5ad37a68e8945266d7388a79fba1734fb6"
+      }
+    },
+    {
+      "preset": "herringbone_extruder_1_4",
+      "part": "gear",
+      "hashes": {
+        "vertices": "b0ec8d371cdfa892585bb7afa2bc68d7a99cd7acff7d4208c55cbcea24dcd4cc",
+        "triangles": "7cc32fe48bbdbe5dde98d2e92f288e467354975a78e4811e316a2d38110df0c9",
+        "face_normals": "6b7389f3913ba2788c09363500cd39787a5d2e876d130db3ff70b43b93a70dd4",
+        "overhang_angles_deg": "0ef1acdd5c870163209bc823826116717b4f16cea284c655aba54bbf6ad85905"
+      }
+    },
+    {
+      "preset": "nema17_to_m8_1_5",
+      "part": "pinion",
+      "hashes": {
+        "vertices": "57063257e4085b5fa505b56922ef001ac518e069cbbdc890d1b9c463d5d7cd24",
+        "triangles": "0fe1b6dd18b20f1a483bb5f59265812288fb76846ece5f3a228b7f745378751d",
+        "face_normals": "883877e617dfb63acefe68f2573ff49af7984d7abcedc6d87c492a9a2edd2103",
+        "overhang_angles_deg": "020b321fe909c0747e2aeeadee5005f28880b9aad7ddb202436f1792c2441bfd"
+      }
+    },
+    {
+      "preset": "nema17_to_m8_1_5",
+      "part": "gear",
+      "hashes": {
+        "vertices": "a6348184075fbe0a69db610a2bb825d9e15d1690d33bd9189dc1959fddf0317e",
+        "triangles": "8f2846b112b668d7017f140074c1ef6814e5e57aad851a3d4a4cc7ce6f61f8d8",
+        "face_normals": "5f2ec0a8f9bc811f56592fe0808a8b0c4f72dda2c04135441db21bd2b27f39ab",
+        "overhang_angles_deg": "a26fc7a69fb1dd36b595d02d03639d8c615c2530d7086924b16a9b67101d94e9"
+      }
+    },
+    {
+      "preset": "stub_heavy_duty",
+      "part": "pinion",
+      "hashes": {
+        "vertices": "f1ed13bb792157aac87bf76dfd4053e51e5c78808a344fc04a04261d0465e2e2",
+        "triangles": "dcf7656fde033bbef447f5b637e87e1f1b42bd8e095fa7318c8cad8ba64fde44",
+        "face_normals": "d63c6aebd51c681f3f54e1ab1bb262a95336f0a1f78049a287bbcba09e84e4be",
+        "overhang_angles_deg": "3a4f6f601cfb5f56e5edb537325167688d187db0d97a98ac335c989f25ac70bb"
+      }
+    },
+    {
+      "preset": "stub_heavy_duty",
+      "part": "gear",
+      "hashes": {
+        "vertices": "35d87d47ba9e7489a0410cf721a19fbd997a2df8803615ad486a06e71554ba68",
+        "triangles": "8cca1db4d79311b300b6ce57e77377ffbdb6c6703427a9f8a3e775a87c19749f",
+        "face_normals": "ca38e1b99fee02f701f6412eceac0a383590aedab929cb108e6541f0c0a40b1f",
+        "overhang_angles_deg": "dda2584c66377b3b5e387477a7148814ceecb3090c36e81792b2131b10e98a51"
+      }
+    },
+    {
+      "preset": "high_contact_smooth",
+      "part": "pinion",
+      "hashes": {
+        "vertices": "1fc75d76e501405a9c6ebb5362511acadec619ccfb29847bac94aeb2af8ce118",
+        "triangles": "3871b7908aad991629e8f240afe293bd4698484f97705ec91b8f4aeaa83d1e34",
+        "face_normals": "307c11d32f09e964b3539edd039416215444c777e880b99b2b6e9922804f1006",
+        "overhang_angles_deg": "cb1d50aa5473c3bafceb200190638e79b8aab6475d289a9e4f835bc84ac394a5"
+      }
+    },
+    {
+      "preset": "high_contact_smooth",
+      "part": "gear",
+      "hashes": {
+        "vertices": "c4761c527a8e95f9f56105c0391f910c4ea87c8964f1528bd3a0b7e528285e4c",
+        "triangles": "de10d533207c5b7ae84228a44566359384dc309b8d13c42fd49b62cb21fe7aae",
+        "face_normals": "d0970b20ee893e211c090ab4b3b3768c7bd0a2b9190a3debfcf204dc307489b3",
+        "overhang_angles_deg": "363edd32548cab0c510f345f32439ba9b36beae4890755b134b824652dba2dcd"
+      }
+    },
+    {
+      "preset": "micro_pinion_shifted",
+      "part": "pinion",
+      "hashes": {
+        "vertices": "7f210a0c184aad4a79d5308853da800446ca911e9aa432d8407e20a1d34f3342",
+        "triangles": "39e7a251ebf5a95ef01e0b2982230ffdaba2745b47ab961a5437e2abf04d6d16",
+        "face_normals": "0de331d6036afd802680955140988d2b156cb51746bc3d82d2cb973b7d195900",
+        "overhang_angles_deg": "abaef33a4956bb245bf299a92b9557013042caebd21c3c73ce20f96376f0248d"
+      }
+    },
+    {
+      "preset": "micro_pinion_shifted",
+      "part": "gear",
+      "hashes": {
+        "vertices": "f9b52f7deaa84c36e3292aee49e6177109866fdd68c523fbfeef3ffd85810575",
+        "triangles": "3cfaefd05030790959011e7e13d75a5b7449a3d3d481c8b237e815b2a39002bb",
+        "face_normals": "d112472682e169b34e325c4dba95892902f615f9f17040672c37c0def6f7e47a",
+        "overhang_angles_deg": "86d1e852a356822096f40db8c44dc3a72c2090b888861a3ad4fee50f58aac6c9"
+      }
+    },
+    {
+      "preset": "sync_1_1_helical_45",
+      "part": "pinion",
+      "hashes": {
+        "vertices": "ef492187307aebbe34e61ab3eb499588e380dfb77dc2e8af5485e55392af20cc",
+        "triangles": "af971de6989d35e7ee3c2d57d6042fd605cc2fd9303090f6529d41da8162b789",
+        "face_normals": "43ecdbfb374d3114a62fbb428e317a39b1d00a261c3af31b108ea527f0e48702",
+        "overhang_angles_deg": "59673d112316a7b57aa5277d231ee6304834b50a254a80191a280e0c463a2fb1"
+      }
+    },
+    {
+      "preset": "sync_1_1_helical_45",
+      "part": "gear",
+      "hashes": {
+        "vertices": "a7b6a4e91489ef602dde82dcd6d00d79d811816a8357ed68a290ab73dc079fa5",
+        "triangles": "64029769da746da024dc9cca1d901ef01dea0e2b855af1aeff2019388d7b0f69",
+        "face_normals": "ee5deb678f5ade47190feff6a968088156b398511fe2662ca2a8533be3971676",
+        "overhang_angles_deg": "8817cda369ad542e1913412e3e768481cea7e26ae21cf763eb40aca5c8b11e79"
+      }
+    },
+    {
+      "preset": "bearing_608_spoked",
+      "part": "pinion",
+      "hashes": {
+        "vertices": "6886a763a8fd37ab55c49c7db405a4165be1e0c1b23ed90aa8fabcac7f7762e5",
+        "triangles": "df415d0e6b84e5223d9c479aa98a80f8ea7f486b970614f8082a6738aa3a79b9",
+        "face_normals": "8105f9e1cebd7f1f5dcc4a829aa7b95517415c1641f9337a1e51e0b888e0fedd",
+        "overhang_angles_deg": "89395e8279d74917f31888ad2ff9f5e88b5e0d1f7910d5e8cf78e9913ccaebdd"
+      }
+    },
+    {
+      "preset": "bearing_608_spoked",
+      "part": "gear",
+      "hashes": {
+        "vertices": "753430a6a8dbb3878b5fbc564ac5bc40737561dd315b2e92db8e1b9c852143b4",
+        "triangles": "19e87b027c4454d100fb47e84b49fa54fb2104073e5cbc25d5e3f686681e2bc3",
+        "face_normals": "01b8577c2854a8e0216d05de0c4e339f3295301734ef0bedc74039ebc06b46de",
+        "overhang_angles_deg": "6c3c8325e9fb647f9ad87c3d78af876ac39b04c62fbeeb48a638f79c05e3467c"
+      }
+    },
+    {
+      "preset": "robotics_compact_m125",
+      "part": "pinion",
+      "hashes": {
+        "vertices": "dd2757a00511e373363ba238a8c14481e23499cf5b537ce51299262245902fc2",
+        "triangles": "42f31f6aec89c7e245a7da3caa419d00ca5a86cc3d5326e0af95a9eda9241c97",
+        "face_normals": "ca3323ff81a92d2061dee733568bea54ab0f162d67d7c4f71cd886dfc85fe271",
+        "overhang_angles_deg": "3c7ed8a6a8d81f8bf9c9cadb69f494eca65b3d8ac4166330ee39ec7e4f3cca08"
+      }
+    },
+    {
+      "preset": "robotics_compact_m125",
+      "part": "gear",
+      "hashes": {
+        "vertices": "f813f6b780e030cdab2243ecc8a79b512cf89e1946e7978d4169671d5bc0dfbf",
+        "triangles": "333b32882190f9b19ec5351f2dc1eecdc67ee8cfee14c5a671a131c4a3e22a79",
+        "face_normals": "17c9119fd74f2c7c027359d93618f528c27b01941f0fac93fd38ebca4a5cc2fd",
+        "overhang_angles_deg": "662b3c7b7253cbe582733dccc52e0537020f1fcc804f3902e17a74b8454a7af3"
+      }
+    },
+    {
+      "preset": "industrial_keyway_m35",
+      "part": "pinion",
+      "hashes": {
+        "vertices": "bd6c0213f1f8fde1fa95fc5c5adcfe187a8269254a57718ca5bfbf1bb5161382",
+        "triangles": "c117f880d539ca760e452bead1a21c3234ba9c9742218eab57183ad0625d1d06",
+        "face_normals": "948629c2159d53e8d843ab31b9d51cce0a68303980bda4a2fdc9aeb84d45f8a2",
+        "overhang_angles_deg": "3eae2a3f2862aaba90b4b6399804180b66dc79e4f09c710d992596dc46678d76"
+      }
+    },
+    {
+      "preset": "industrial_keyway_m35",
+      "part": "gear",
+      "hashes": {
+        "vertices": "a7ab09f0b0901f4fdf89de2f0f580c46e6b3eec516625d4a752cda8863a59cd0",
+        "triangles": "61bb80b2276786a04f89442fcde9b3297e6230d365e22ba7029664c544a0e899",
+        "face_normals": "85ae04e4ea9406644299aba2971f53e3fee001da615cdc201a8ad737cfef21e6",
+        "overhang_angles_deg": "1ffee8c10812fccf241ed1152aa64a76d554c0052e402e86befcf22c0f44ce9a"
+      }
+    },
+    {
+      "preset": "quick_fit_calibration",
+      "part": "pinion",
+      "hashes": {
+        "vertices": "38fde3c5ed66643d9e566732c77055595e52bbcfa4c0d1e1a8a805a914d7bafc",
+        "triangles": "ab686c556dad33b6f4280d8fec60f7ba4b9e14c77d23a62d7a00892c4b7fbbfc",
+        "face_normals": "f260f56ad13774f4935f2cbc4777b8c0405e29f54a190c142c2bcb8fa4aed2f2",
+        "overhang_angles_deg": "7da301ddbecc58324741f897c987d8def10aa0be9f6d6e323b63b27c4549fc7c"
+      }
+    },
+    {
+      "preset": "quick_fit_calibration",
+      "part": "gear",
+      "hashes": {
+        "vertices": "5c6ff3b8b46f3cf98d07ec096ab652c7c42b43e42f03ce251210ccb4c2d6b866",
+        "triangles": "34db51d68c78657042764a8498777a88c715fba794f68b0fb496789ed05bdf6a",
+        "face_normals": "41dc628b00d9f8e3d5a71f27f55227d19dcc1a955b8bdaa371a7ec79cfe08ae9",
+        "overhang_angles_deg": "dc554a33e036e19a2bb99520aa3b635afeeb4debe68dfd3e54b3ed63c7368791"
+      }
+    },
+    {
+      "preset": "quick_fit_calibration",
+      "part": "sector_pinion",
+      "hashes": {
+        "vertices": "9413fd9a936ec3c846ab3133fb2e812840f1624e3bd34572fc91c52c4dd873ec",
+        "triangles": "396af2d90ee67ad9374189fab588cc335defa8d87268e64c20b06df5029d8246",
+        "face_normals": "d088036f51a6fa628123664d3b35e2f3b31aec37a91dbda1002e3d4a0fc68328",
+        "overhang_angles_deg": "02ce9fef9e4331824dbe990848b41c377811d124cb24a444e45376fa74e34508"
+      }
+    },
+    {
+      "preset": "quick_fit_calibration",
+      "part": "sector_gear",
+      "hashes": {
+        "vertices": "d09b1f9933509babb152974306b52d03067ce43a7e0e3427330a7005ad212b98",
+        "triangles": "749585cdae16e8a15ad08f0c69ed3bc94785e7e7f0c89470f93f817d93301d86",
+        "face_normals": "ccf24fbfcdf171e8accaa0f123831e59d9356dba2bebb092dce5c427851e71e7",
+        "overhang_angles_deg": "173f889dcb2fcb5cb07944a297ba9aea0a5c4d21ec542eeb8f5e36c8cd45de33"
+      }
+    },
+    {
+      "preset": "quick_fit_calibration",
+      "part": "center_jig_base",
+      "hashes": {
+        "vertices": "980cd0536ab3ac6126c06f43d023b9cddf0bc6bc5677eebbdffc2ce3e95b4489",
+        "triangles": "42e69a9be4e6e6982988eaf24dcc3fa44cf523a3a03a908555a667a5866283bd",
+        "face_normals": "d9bed28e1059b12693a25353e369286da055fa56621fb46a02fa522042d9d249",
+        "overhang_angles_deg": "b8165a505318b9cde5978c2447468576615e16cb09dc69206f760b77804d7951"
+      }
+    },
+    {
+      "preset": "quick_fit_calibration",
+      "part": "bore_fit_gauge",
+      "hashes": {
+        "vertices": "18aef1c6888d21de8b81795541d88670bb2568308ec4898f82f49c29e1fb6646",
+        "triangles": "c8f7601558819538f744a3314d491706e77611e87e3278a9fe40f3ca1e0215f5",
+        "face_normals": "81a10b6b1d948340dabdfbe9bf81a3931ed2facd672d35c531c21e5210b1569e",
+        "overhang_angles_deg": "49e387070e8882b15ad6a2870048a56e39e0743054c624f6a811ed4edb96af92"
+      }
+    }
+  ],
+  "unchanged_sources": [
+    {
+      "file": "src/gear_studio/schema.py",
+      "sha256": "bc890e79b8b388018bedbb4e9ac3927080f27ceda0f50ad2a148b644680d1813"
+    },
+    {
+      "file": "src/gear_studio/involute_math.py",
+      "sha256": "b689626861a2fc65e1651fa4961863aea662db0bde1743e663a75b91e9e043c3"
+    },
+    {
+      "file": "src/gear_studio/fit_and_kinematics.py",
+      "sha256": "69b09c315492735535d99fe03c2c22a2cc0c752ef3c6070bbc5fb00386cfd52e"
+    },
+    {
+      "file": "src/gear_studio/mesh_generator.py",
+      "sha256": "eeb4891b5bd8171e99d59ee74829edab1916444d4f92506f6bfede08f618b03a"
+    },
+    {
+      "file": "src/gear_studio/exporters.py",
+      "sha256": "ca396050eb6b0794fb597ad03b39379563a6fb5ce392dddfecf29ea65fd8c3db"
+    }
+  ]
+}
