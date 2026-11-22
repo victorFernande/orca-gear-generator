@@ -37,7 +37,7 @@ O encaixe depende da impressão e do material. Revise orientação, suportes e c
 ## Como começar
 
 1. Instale e ative no **OrcaSlicer 2.5.1 ou superior**. Feche e abra o aplicativo após instalar ou atualizar.
-2. Abra a aba **Gerador de Engrenagens** ou o painel lateral do Orca Gear Studio.
+2. Abra a aba **Gear Studio** ou o painel lateral do Orca Gear Studio.
 3. Escolha um preset, ajuste a transmissão e confira a prévia.
 4. Faça um teste de encaixe quando necessário e exporte ou envie as peças à mesa.
 

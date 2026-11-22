@@ -6,6 +6,8 @@
 
 Plugin nativo em Python para **OrcaSlicer 2.5.1+** que adiciona um estúdio CAD paramétrico 3D interativo (WebGL2 + lupa cinemática 2D) para engenharia, simulação de giro, calibração de folgas e fabricação aditiva FDM de engrenagens cilíndricas retas (*Spur*), helicoidais (*Helical* até 60°, incluindo 45° sem suporte) e espinha de peixe (*Herringbone*), com envio em 1 clique direto para a mesa de impressão (*Plater*) e ajuste automático de fatiamento mecânico estrutural.
 
+**Versão 1.4.1 / Patch:** a aba superior agora se chama **Gear Studio** em todos os idiomas. The native top-bar tab is now named **Gear Studio** across interface languages. Feche e reabra o OrcaSlicer após atualizar / Close and reopen OrcaSlicer after updating.
+
 **Versão 1.4.0:** seletor offline com **Português, English, Español, Italiano, Français, Deutsch e 日本語** na aba e no painel. A escolha manual fica salva e sincronizada; sem escolha, o plugin acompanha o idioma compatível do OrcaSlicer. Presets pessoais, nomes e números permanecem intactos. O bundle compacta apenas os dados de interface/tradução; a prévia libera as linhas de arame e os buffers do kit quando deixam de ser usados. A geometria de fabricação é idêntica à versão 1.3.1. Veja [idiomas, medições e limites / languages, measurements and limitations](docs/LANGUAGES_AND_PERFORMANCE.md).
 
 **Idiomas modulares:** para disponibilizar outro idioma, adicione apenas um JSON em `src/gear_studio/locales/`, gere os instaladores e reinicie o Orca. O seletor e a detecção regional reconhecem o arquivo automaticamente; não é preciso alterar Python/JavaScript. Veja o [formato e o exemplo de contribuição](docs/LANGUAGES_AND_PERFORMANCE.md#adicionar-outro-idioma).
@@ -15,7 +17,7 @@ Plugin nativo em Python para **OrcaSlicer 2.5.1+** que adiciona um estúdio CAD 
 ## Principais Recursos
 
 - **Dupla Integração Nativa no OrcaSlicer**:
-  1. **Aba Superior (`Gerador de Engrenagens`)**: Estúdio de engenharia completo em 3 colunas ao lado de *Preparar / Visualizar / Dispositivo*.
+  1. **Aba Superior (`Gear Studio`)**: Estúdio de engenharia completo em 3 colunas ao lado de *Preparar / Visualizar / Dispositivo*.
   2. **Painel Lateral Acoplado (`Orca Gear Studio - Painel Lateral`)**: Acessível em *Arquivo -> Plugins -> Executar*, abrindo um painel compacto acoplado à direita da mesa 3D do OrcaSlicer.
 - **Geometria Evolvente ISO 21771 / ISO 53 de Precisão**:
   - **Retas (`spur`)**, **Helicoidais (`helical`, 0°–60° com atalho 45° auto-suportado)** e **Espinha de Peixe (`herringbone`)** com mãos opostas automáticas entre Pinhão ($G_1$) e Coroa ($G_2$).
@@ -91,7 +93,7 @@ O script:
 ### Como Ativar no OrcaSlicer
 1. Abra (ou reinicie) o **OrcaSlicer 2.5.1+**.
 2. Acesse **Plugins -> Gerenciar Plugins** (*Manage Plugins*), habilite **Orca Gear Studio** e aceite as permissões locais solicitadas (leitura/escrita na pasta de dados e *threading* — zero permissão de subprocesso externo!).
-3. Clique na aba superior **Gerador de Engrenagens** (ou abra o painel lateral via **Arquivo -> Plugins -> Orca Gear Studio - Painel Lateral**).
+3. Clique na aba superior **Gear Studio** (ou abra o painel lateral via **Arquivo -> Plugins -> Orca Gear Studio - Painel Lateral**).
 
 ---
 

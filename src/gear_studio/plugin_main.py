@@ -1749,14 +1749,14 @@ _SHARED_CONTROLLER = GearStudioController()
 
 
 class GearStudioPageCapability(orca.pages.PagesPluginCapabilityBase):
-    """Full-screen top-bar tab (`Gerador de Engrenagens`) beside Prepare / Preview / Device."""
+    """Full-screen top-bar tab (`Gear Studio`) beside Prepare / Preview / Device."""
 
     def __init__(self, controller: GearStudioController | None = None) -> None:
         super().__init__()
         self._controller = controller or _SHARED_CONTROLLER
 
     def get_name(self) -> str:
-        return "Gerador de Engrenagens"
+        return "Gear Studio"
 
     def get_default_config(self) -> dict[str, Any]:
         return {

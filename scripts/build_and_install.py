@@ -49,7 +49,7 @@ MODULE_ORDER: list[str] = [
     "plugin_main.py",
 ]
 
-DEFAULT_PLUGIN_VERSION = "1.4.0"
+DEFAULT_PLUGIN_VERSION = "1.4.1"
 PLUGIN_VERSION = os.environ.get("ORCA_PLUGIN_VERSION", "").strip().lstrip("v") or DEFAULT_PLUGIN_VERSION
 
 PEP723_HEADER = f"""\
@@ -566,7 +566,7 @@ def verify_bundle_smoke(bundle_path: Path) -> None:
 
             page_cap = mod.GearStudioPageCapability()
             dock_cap = mod.GearStudioDockCapability()
-            assert page_cap.get_name() == "Gerador de Engrenagens"
+            assert page_cap.get_name() == "Gear Studio"
             assert dock_cap.get_name() == "Orca Gear Studio - Painel Lateral"
 
             mod.orca.host.plugin.storage = lambda: str(storage_only_dir)
