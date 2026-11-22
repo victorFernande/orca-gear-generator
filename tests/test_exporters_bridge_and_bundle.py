@@ -698,7 +698,7 @@ class TestExportersBridgeAndBundle(unittest.TestCase):
         self.assertEqual(plugin_meta.get("name"), "Orca Gear Studio")
         self.assertTrue(bool(plugin_meta.get("description")))
         self.assertTrue(bool(plugin_meta.get("author")))
-        self.assertEqual(plugin_meta.get("version"), "1.4.0")
+        self.assertEqual(plugin_meta.get("version"), "1.4.1")
         self.assertTrue(Path(build_mod.DIST_ANY_BUNDLE_PATH).is_file())
 
         whl_path = Path(build_mod.build_wheel())
@@ -761,7 +761,7 @@ class TestExportersBridgeAndBundle(unittest.TestCase):
         self.assertIsInstance(page_cap.get_default_config(), dict)
         self.assertIsInstance(dock_cap.get_default_config(), dict)
 
-        self.assertEqual(page_cap.get_name(), "Gerador de Engrenagens")
+        self.assertEqual(page_cap.get_name(), "Gear Studio")
         self.assertEqual(dock_cap.get_name(), "Orca Gear Studio - Painel Lateral")
 
         html_page = page_cap.get_ui()
