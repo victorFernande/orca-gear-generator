@@ -49,7 +49,7 @@ MODULE_ORDER: list[str] = [
     "plugin_main.py",
 ]
 
-DEFAULT_PLUGIN_VERSION = "1.4.1"
+DEFAULT_PLUGIN_VERSION = "1.4.2"
 PLUGIN_VERSION = os.environ.get("ORCA_PLUGIN_VERSION", "").strip().lstrip("v") or DEFAULT_PLUGIN_VERSION
 
 PEP723_HEADER = f"""\

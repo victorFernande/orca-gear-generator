@@ -1,5 +1,8 @@
 # Orca Gear Studio (`orca_gear_generator`)
 
+**1.4.2: publicação automática / automatic publishing.** Publicar uma release no GitHub envia o pacote verificado ao OrcaCloud, após aprovação da CI. Corrigido o envio de notas com Unicode e ponto e vírgula. O fluxo usa credenciais temporárias e verifica o pacote publicado. / Publishing a GitHub release uploads the verified package to OrcaCloud after CI approval.
+
+
 <p align="center">
   <img src="assets/icon.jpg" alt="Orca Gear Studio Showcase Icon" width="220" />
 </p>
