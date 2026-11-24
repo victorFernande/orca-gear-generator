@@ -36,6 +36,7 @@ async function main(){
   cp.execFileSync(process.env.ORCA_TEST_PYTHON || 'python',['-B','-W','error',path.join(__dirname,'render_locale_fixtures.py'),temp],{cwd:root});
   const pages=JSON.parse(fs.readFileSync(path.join(temp,'pages.json'),'utf8'));
   const languageCount = new Set(pages.map(x=>x.lang)).size;
+  for(const code of ['ru','cs','zh'])assert(pages.some(item=>item.lang===code),'missing published language '+code);
   const server=http.createServer((req,res)=>{
     const name=path.basename(new URL(req.url,'http://localhost').pathname);
     if(name==='favicon.ico'){res.writeHead(204);return res.end()}
@@ -64,6 +65,7 @@ async function main(){
       baselineHash ||= hash; assert.equal(hash,baselineHash,'changing locale/theme/mode changed geometric buffers');
       const visibleOverflow=await page.locator('.quick-pill,.seg-btn').evaluateAll(nodes=>nodes.filter(x=>x.getBoundingClientRect().width>0 && x.scrollWidth>x.clientWidth+1 && !['hidden','clip'].includes(getComputedStyle(x).overflowX)).map(x=>x.textContent));
       assert.deepEqual(visibleOverflow,[],'uncontained translated buttons');
+      if(['ru','cs','zh'].includes(item.lang))await page.screenshot({path:path.join(output,item.lang+'-'+item.mode+'-'+item.theme+'.png')});
       if(item.lang==='it' && item.mode==='page' && item.theme==='light')await page.screenshot({path:path.join(output,'italian-page-light.png')});
       records.push({...item,geometry_hash:hash,large_buffer_bytes:initial.live.reduce((a,x)=>a+x.bytes,0)});
       await context.close();

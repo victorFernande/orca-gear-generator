@@ -106,7 +106,7 @@ class LocalizationTests(unittest.TestCase):
         bundle=build.build_bundle()
         text=bundle.read_text(encoding="utf-8")
         self.assertIn("class GearStudioController", text)
-        self.assertIn("# version = \"1.4.2\"", text)
+        self.assertIn("# version = \"1.4.3\"", text)
         tree=ast.parse(text)
         assignment=next(n for n in tree.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=="_STUDIO_UI_HTML_TEMPLATE" for t in n.targets))
         import base64, zlib
