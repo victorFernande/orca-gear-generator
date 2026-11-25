@@ -527,7 +527,7 @@ def verify_bundle_smoke(bundle_path: Path) -> None:
 
     cp_tag = f"cp{sys.version_info.major}{sys.version_info.minor}"
     pkgs_root = get_orca_base_dir() / "python" / "packages"
-    for cand_pkg in (pkgs_root / cp_tag, pkgs_root / "cp312"):
+    for cand_pkg in (pkgs_root / cp_tag,):
         if cand_pkg.is_dir() and str(cand_pkg) not in sys.path:
             sys.path.insert(0, str(cand_pkg))
 

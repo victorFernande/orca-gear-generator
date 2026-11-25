@@ -27,7 +27,7 @@ _ORCA_ROOTS = [
 ]
 for _r in _ORCA_ROOTS:
     if _r is not None:
-        for _cand in (_r / "python" / "packages" / _CP_TAG, _r / "python" / "packages" / "cp312"):
+        for _cand in (_r / "python" / "packages" / _CP_TAG,):
             if _cand.is_dir() and str(_cand) not in sys.path:
                 sys.path.insert(0, str(_cand))
 if str(PROJECT_SRC) not in sys.path:

@@ -45,7 +45,7 @@ else:
     _ORCA_BASE = Path(os.environ.get("XDG_CONFIG_HOME") or (Path.home() / ".config")) / "OrcaSlicer"
 INSTALLED_DIR = _ORCA_BASE / "orca_plugins" / "orca_gear_generator"
 
-for _cand in (_ORCA_BASE / "python" / "packages" / _CP_TAG, _ORCA_BASE / "python" / "packages" / "cp312", PROJECT_SRC):
+for _cand in (_ORCA_BASE / "python" / "packages" / _CP_TAG, PROJECT_SRC):
     _ps = str(_cand)
     if _cand.exists() and _ps not in sys.path:
         sys.path.insert(0, _ps)
